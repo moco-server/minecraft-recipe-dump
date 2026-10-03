@@ -30,30 +30,36 @@ public object DumpSearch {
         }
     }
 
-    /** 指定タグの解決済みIDを重複除去して昇順で返す。未登録は0件、不正な参照対象タグは拒否する。 */
-    public fun itemsByTag(
+    /** 任意のタグとnamespaceをANDで絞る。全件検索で一覧が欠落する旧ダンプは再収集が必要。 */
+    public fun items(
         dump: JsonObject,
-        tag: String,
+        tag: String? = null,
+        namespace: String? = null,
     ): JsonObject {
-        val value = dump.getAsJsonObject("itemTags").get(tag)
+        val value = if (tag != null) {
+            dump.getAsJsonObject("itemTags").get(tag)
+        } else {
+            require(dump.has("items")) { "Item inventory is missing; recollect the dump to list all items" }
+            dump.get("items")
+        }
         require(value == null || value.isJsonArray) { "Item tag $tag must be an array" }
-        val ids =
-            value
-                ?.asJsonArray
-                ?.map { element ->
-                    require(element.isJsonPrimitive && element.asJsonPrimitive.isString) {
-                        "Item tag $tag must contain only string IDs"
-                    }
-                    element.asString
-                }.orEmpty()
-                .distinct()
-                .sorted()
+        val ids = value?.asJsonArray?.map { element ->
+            require(element.isJsonPrimitive && element.asJsonPrimitive.isString) {
+                "Item tag $tag must contain only string IDs"
+            }
+            element.asString
+        }.orEmpty().filter { namespace == null || (':' in it && it.substringBefore(':') == namespace) }
+            .distinct().sorted()
         val items = JsonArray()
         ids.forEach { items.add(it) }
         return JsonObject().apply {
-            addProperty("tag", tag)
+            if (tag != null) addProperty("tag", tag)
+            if (namespace != null) addProperty("namespace", namespace)
             add("items", items)
             addProperty("count", items.size())
         }
     }
+
+    /** 指定タグの解決済みIDを重複除去して昇順で返す。未登録は0件、不正な参照対象タグは拒否する。 */
+    public fun itemsByTag(dump: JsonObject, tag: String): JsonObject = items(dump, tag = tag)
 }

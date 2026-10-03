@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption
 
 /** schema 1のスナップショットを扱う。completeは書き出し完了のみを示す。 */
 public object DumpJson {
-    private val gson = GsonBuilder().setPrettyPrinting().create()
+    private val gson = GsonBuilder().setPrettyPrinting().serializeNulls().create()
 
     /** 不完全・未対応形式・重複IDを拒否する。入力の読み込み診断は保証しない。 */
     public fun decode(text: String): JsonObject {
@@ -38,6 +38,17 @@ public object DumpJson {
             require(recipe.get("data")?.isJsonObject == true) { "Recipe requires codec data" }
         }
         require(dump.get("itemTags")?.isJsonObject == true) { "Missing itemTags object" }
+        if (dump.has("items")) {
+            val inventory = dump.get("items")
+            require(inventory.isJsonArray) { "items must be an array" }
+            val itemIds = mutableSetOf<String>()
+            for (item in inventory.asJsonArray) {
+                require(item.isJsonPrimitive && item.asJsonPrimitive.isString && isItemId(item.asString)) {
+                    "items must contain fully qualified item IDs"
+                }
+                require(itemIds.add(item.asString)) { "Duplicate item ID ${item.asString}" }
+            }
+        }
         return dump
     }
 
