@@ -126,3 +126,9 @@ Java 21、Minecraft 1.21.1、NeoForge 21.1.252で`check :neoforge:build :neoforg
 全件diamond出力検索は解析済み3,911／未対応838／未解決0。全件iron_axe入力は3,858／820／71、diamondおよびraw_iron入力は各3,824／820／105。すべて独立三値評価・タグ解決と一致し、終了コード2。crushing_wheelとamethyst_shard出力のANDは全67候補を評価し、stationTypes根拠を確認。新旧ダンプのstationsは各17装置でID順。
 
 既存metadata／タグ検索は保存済み3 snapshotで39照合すべて一致。一覧検索の第2段階5ケースも再実行して一致した。証拠は.local/later-*.logと.local/integration/later-cli-result.log。Mekanismのheaderは10.7.19で、配布JAR 10.7.19.85以外のbuildを識別・保証できない。表外形式・他版・clientは未検証。
+
+### 全体レビューと修正
+
+新規contextのread-onlyレビュアー1名が第2〜4段階の全diffを確認。Critical／Minorなし、Important 1件（pattern使用key欠落を別keyの一致が隠す）を修正した。バニラshapedとCreate mechanical_craftingのcore回帰2件、CLI回帰1件が修正前に失敗し、key存在の先行検証で成功した。未使用key無視、材料ORの既知一致優先、出力だけの解析は維持する。
+
+修正後の必須check／build／verifyModJar／distZipとinstallDist成功、core 39件・CLI 14件成功。配布CLIで両形式の不正例がexit2、candidate1／analyzed0／unresolved1、invalid_shapeと$.key.Bになることを確認。実snapshotの新23／旧39／inventory5照合も再実行して一致した。最終GameTest必須3件とNode 29件も成功。証拠は.local/review-*-fix-red.log、.local/review-fix-green.log、.local/later-final-review.md。

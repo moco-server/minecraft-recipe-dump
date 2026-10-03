@@ -110,6 +110,12 @@ internal fun evaluateShapedInputs(
             rows.any { it.isNullOrEmpty() } ||
             rows.map { it?.length }.distinct().size != 1 ||
             symbols.isEmpty() -> unknown("invalid_shape", "$.pattern")
+        // key欠落は候補の未知枝ではなくpattern自体の不正。別keyの一致で構造違反を隠さない。
+        symbols.any { !key.has(it.toString()) } ->
+            MatchEvaluation(
+                MatchState.UNKNOWN,
+                issues = symbols.filter { !key.has(it.toString()) }.map { AnalysisIssue("invalid_shape", "$.key.$it") },
+            )
         else -> anyMatch(symbols.map { evaluateIngredient(key.get(it.toString()), dump, item, "$.key.$it") })
     }
 }

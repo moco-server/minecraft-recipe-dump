@@ -22,6 +22,17 @@ class ModRecipeAnalysisTest {
     ) = evaluateModRecipe(dump, row, uses, produces)
 
     @Test
+    fun `mechanical crafting missing used key cannot be hidden by another match`() {
+        val row = fixture("create_mechanical_crafting")
+        row.getAsJsonObject("data").add("pattern", JsonParser.parseString("[\"AB\"]"))
+        row.getAsJsonObject("data").add("key", JsonParser.parseString("""{"A":{"item":"minecraft:diamond"}}"""))
+        val result = query(row, uses = "minecraft:diamond")
+        assertEquals(MatchState.UNKNOWN, result.state)
+        assertEquals(listOf(AnalysisIssue("invalid_shape", "$.key.B")), result.issues)
+        assertEquals(MatchState.MATCH, query(row, produces = "create:crushing_wheel").state)
+    }
+
+    @Test
     fun `fixed MOD outputs disclose their declared count and chance one`() {
         for ((name, output) in listOf(
             "create_mechanical_crafting" to "create:crushing_wheel",

@@ -12,6 +12,42 @@ import java.nio.file.Path
 
 class MaterialCliTest {
     @Test
+    fun `missing shaped key remains a partial CLI result for both serializers`(
+        @TempDir directory: Path,
+    ) {
+        val file = directory.resolve("dump.json")
+        for (serializer in listOf("minecraft:crafting_shaped", "create:mechanical_crafting")) {
+            Files.writeString(
+                file,
+                """
+                {"schemaVersion":1,"complete":true,"errors":[],"minecraft":"1.21.1","itemTags":{},
+                "mods":[{"id":"create","version":"6.0.10"}],"recipes":[{"id":"test:broken",
+                "type":"minecraft:crafting","serializer":"$serializer","data":{"pattern":["AB"],
+                "key":{"A":{"item":"minecraft:diamond"}},"result":{"id":"minecraft:diamond_block"}}}]}
+                """.trimIndent(),
+            )
+            val out = ByteArrayOutputStream()
+            val err = ByteArrayOutputStream()
+            assertEquals(
+                2,
+                runCli(
+                    listOf("recipes", file.toString(), "--uses", "minecraft:diamond"),
+                    PrintStream(out),
+                    PrintStream(err),
+                ),
+            )
+            assertEquals("", err.toString())
+            val result = JsonParser.parseString(out.toString()).asJsonObject
+            assertEquals(0, result.get("count").asInt)
+            assertEquals(0, result.getAsJsonObject("analysis").get("analyzedCount").asInt)
+            assertEquals(1, result.getAsJsonObject("analysis").get("unresolvedCount").asInt)
+            val diagnostic = result.getAsJsonArray("diagnostics")[0].asJsonObject
+            assertEquals("invalid_shape", diagnostic.get("code").asString)
+            assertEquals("$.key.B", diagnostic.get("path").asString)
+        }
+    }
+
+    @Test
     fun `material queries emit JSON with exhaustive or partial exit codes`(
         @TempDir directory: Path,
     ) {

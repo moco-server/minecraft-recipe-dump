@@ -21,6 +21,17 @@ class VanillaRecipeAnalysisTest {
     ) = evaluateVanillaRecipe(dump, row, uses, produces)
 
     @Test
+    fun `missing used key is structural even when another key matches`() {
+        val row = fixture("crafting_shaped")
+        row.getAsJsonObject("data").add("pattern", JsonParser.parseString("[\"AB\"]"))
+        row.getAsJsonObject("data").add("key", JsonParser.parseString("""{"A":{"item":"minecraft:diamond"}}"""))
+        val result = query(row, uses = "minecraft:diamond")
+        assertEquals(MatchState.UNKNOWN, result.state)
+        assertEquals(listOf(AnalysisIssue("invalid_shape", "$.key.B")), result.issues)
+        assertEquals(MatchState.MATCH, query(row, produces = "minecraft:acacia_boat").state)
+    }
+
+    @Test
     fun `real vanilla codecs support every declared direction`() {
         for ((serializer, input, output) in listOf(
             Triple("crafting_shaped", "minecraft:acacia_planks", "minecraft:acacia_boat"),

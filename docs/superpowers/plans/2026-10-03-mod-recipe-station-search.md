@@ -68,7 +68,7 @@
 - [x] 同テストで成功を確認。README／検索契約へ対応版・serializer・装置一覧と未対応範囲、確率・保持入力・工具の意味、Mek build判別不能を記載する。
 - [x] 共通検証を実行し、配布CLIで固定MOD snapshotの全adapterと装置検索を独立照合する。serializerごとのanalyzed／unsupported／unresolved、根拠・部分終了コードを記録。第1〜3段階の旧コマンドとnull保持も回帰確認し、spec状態を更新する。
 - [x] commit: `feat: expose versioned recipe station searches`。
-- [ ] 全3段階のdiff・受け入れログを新しいレビュアー1名へ渡す。重要指摘をRED→GREENで修正し、未修正の軽微事項を記録。review後に統合方法を既存のユーザー承認範囲と照らして提示する。
+- [x] 全3段階のdiff・受け入れログを新しいレビュアー1名へ渡す。重要指摘をRED→GREENで修正し、未修正の軽微事項を記録。review後に統合方法を既存のユーザー承認範囲と照らして提示する。
 
 ## 共通検証
 
