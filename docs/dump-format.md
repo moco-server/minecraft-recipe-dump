@@ -18,6 +18,16 @@ JSON object。初期Java実証のschema 1もCLIで読み込める。読み込み
 
 完全なsnapshot以外はCLIが拒否する。id/type/serializer/dataの欠落や重複IDも拒否する。未知の追加フィールドは保持できる。CSVのdata列は再シリアライズしたJSONで、入力原文や条件の履歴ではない。
 
+## 検索契約
+
+検索追加によるschemaVersion 1の変更はない。`recipes` コマンドはID・type・レシピIDのnamespaceを完全一致のAND条件で絞る。行全体を保持し、ID昇順で `recipes` と `count` を返す。入力snapshotを変更しない。
+
+`items --tag` は `itemTags` のキーを完全一致で参照し、解決済みIDを重複除去して昇順で `tag`・`items`・`count` を返す。参照対象タグの値が文字列配列でなければ拒否する。無関係なタグの値はこの検索では検証しない。未登録タグは空配列と件数0を返す。
+
+未知の検索値は正常な0件検索として終了コード0。全アイテム一覧、材料・出力の解析、装置アイテムとRecipeTypeの対応は現在の検索契約に含まれない。検索結果もsnapshotの範囲に限り、入力読み込み成功やゲーム内の作成可否を保証しない。
+
+## 差分と構成情報
+
 差分はrecipesのIDとJSON内容を比較し、object key順序を無視、配列順序を維持する。タグが変わって同じレシピの成立範囲が変化しても、dataが同じならchangedに入らない。競合判定やゲーム上の意味の等価判定ではない。
 
 MODのversionと選択pack順序を記録するが、JAR・設定・スクリプト・packのハッシュはダンプへ含めていない。namespaceから提供元JARを断定しない。

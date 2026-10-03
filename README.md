@@ -31,6 +31,10 @@ Windowsの通常サーバーでは `win_args.txt` を使用します。空白を
 cli/build/install/recipe-dump/bin/recipe-dump summary /path/to/recipes.json
 cli/build/install/recipe-dump/bin/recipe-dump csv /path/to/recipes.json > recipes.csv
 cli/build/install/recipe-dump/bin/recipe-dump diff /path/to/before.json /path/to/after.json
+cli/build/install/recipe-dump/bin/recipe-dump recipes /path/to/recipes.json --id minecraft:iron_ingot_from_smelting_iron_ore
+cli/build/install/recipe-dump/bin/recipe-dump recipes /path/to/recipes.json --type minecraft:smelting
+cli/build/install/recipe-dump/bin/recipe-dump recipes /path/to/recipes.json --namespace create --type create:crushing
+cli/build/install/recipe-dump/bin/recipe-dump items /path/to/recipes.json --tag minecraft:planks
 ```
 
 Java 21を `JAVA_HOME` に設定します。Windowsは `gradlew.bat` と `recipe-dump.bat` を使用します。配布用ZIPは `./gradlew :cli:distZip` で生成します。
@@ -38,6 +42,14 @@ Java 21を `JAVA_HOME` に設定します。Windowsは `gradlew.bat` と `recipe
 - `summary`: レシピ数、アイテムタグ数、RecipeType別件数。
 - `csv`: ID・型・シリアライザー・codecのJSON。独自形式はdata列に保持。
 - `diff`: レシピID単位の追加・削除・内容変更。JSONのobject key順序は無視。タグ・構成変更そのものの比較は未実装。
+- `recipes`: レシピ一覧。任意の `--id`・`--type`・`--namespace` で絞り込み、組み合わせはAND条件。フィルターなしなら全件。
+- `items`: 必須の `--tag` に属する解決済みアイテムID一覧。全登録アイテムの一覧ではありません。
+
+検索値は完全一致で、namespaceの省略補完や部分一致は行いません。`--namespace` はレシピIDのコロン前の文字列に適用し、実際の提供元MOD／JARや材料・出力の所属は判定しません。
+装置で調べる場合は、現段階では `--type minecraft:smelting` のようにRecipeTypeを指定します。装置名・材料・出力アイテムによる検索は後続の対応です。
+
+`recipes` のJSON結果は `recipes` 配列と `count`、`items` は `tag`・`items` 配列・`count` を持ちます。ID順で出力し、タグ内の重複アイテムは除去します。未知のID・type・namespace・タグによる0件検索も終了コード0です。
+オプションは `--name value` 形式のみ。同じオプションの重複、未知のオプション、値不足・空値、余分な位置引数は拒否します。診断はstderrへ出します。
 
 不完全なダンプ、未対応のschema、重複ID、読み込み失敗、使用法の誤りではCLIが非ゼロ終了します。競合やゲーム内の成立可否を自動判定するコマンドはありません。
 
@@ -53,7 +65,7 @@ schemaVersion 1の `recipes` は現在のRecipeManagerのスナップショッ�
 
 | module | 担当 |
 | --- | --- |
-| `core/` | ゲームに依存しないJSON検証、atomic保存、集計、CSV、差分 |
+| `core/` | ゲームに依存しないJSON検証、atomic保存、集計、CSV、差分、検索 |
 | `neoforge/` | イベント購読、RecipeManager収集、登録済みcodec、正常停止 |
 | `cli/` | 引数、ファイル読み込み、stdout／stderr、終了コード |
 

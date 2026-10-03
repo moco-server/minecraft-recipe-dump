@@ -6,7 +6,7 @@
 
 ## 構成
 
-- core: Gsonによるschema 1の検証、atomic保存、レシピ集計、CSV、ID単位の差分。Minecraft／loader／KFFの依存を禁止する。
+- core: Gsonによるschema 1の検証、atomic保存、レシピ集計、CSV、ID単位の差分、レシピ・アイテムタグ検索。Minecraft／loader／KFFの依存を禁止する。
 - neoforge: 有効化オプション、専用サーバーの最初のティック終了時の収集、登録済みRecipe.CODEC、タグ・構成の取得、通常停止。
 - cli: 引数・ファイル読み込み・stdout／stderr・終了コード。coreを利用する。
 
@@ -24,7 +24,10 @@ JVM終了コードは保存成功を保証しない。出力runIdをログに記
 
 ## 今回の範囲と今後
 
-一覧・CSV・レシピ差分を提供する。完全な競合検出、タグ／構成の差分、RecipeManager外の加工、任意インスタンス自動準備、ワールド生成前の終了、他Loader対応は含まない。後のティックやreloadによる変更もsnapshotに含まれると保証しない。
+一覧・CSV・レシピ差分に加え、レシピID／RecipeType／レシピIDのnamespaceによるAND検索と、解決済みアイテムタグの検索を提供する。検索用のJSON生成はcore、引数・I/O・表示はcliが担当する。IDのnamespaceは提供元JARの判定には使わない。アイテムタグ検索は全登録アイテム一覧ではない。
+
+材料・出力検索、装置名との対応、全アイテム一覧の収集は[段階的検索の設計](superpowers/specs/2026-10-03-cli-search-design.md)に沿って後続で検討する。
+完全な競合検出、タグ／構成の差分、RecipeManager外の加工、任意インスタンス自動準備、ワールド生成前の終了、他Loader対応は含まない。後のティックやreloadによる変更もsnapshotに含まれると保証しない。
 
 今後は読み込み診断とrunId付き状態ファイルを先に検討する。競合検査を追加するなら対象RecipeTypeを明示する。対応版追加はアダプター別の実測で判断する。
 
