@@ -4,8 +4,8 @@ plugins {
     alias(libs.plugins.moddev)
 }
 kotlin { jvmToolchain(21) }
-val templateModId = providers.gradleProperty("mod_id").get()
-base { archivesName.set(templateModId) }
+val recipeModId = providers.gradleProperty("mod_id").get()
+base { archivesName.set(recipeModId) }
 repositories {
     maven("https://thedarkcolour.github.io/KotlinForForge/") {
         content { includeGroup("thedarkcolour") }
@@ -54,7 +54,7 @@ val gametest =
 configurations[gametest.implementationConfigurationName].extendsFrom(configurations.implementation.get())
 val fixtureMetadata =
     tasks.register<ProcessResources>("generateGameTestMetadata") {
-        val values = mapOf("mod_id" to templateModId, "mod_version" to project.version.toString())
+        val values = mapOf("mod_id" to recipeModId, "mod_version" to project.version.toString())
         inputs.properties(values)
         expand(values)
         from("src/gametest/templates")
@@ -64,12 +64,12 @@ gametest.resources.srcDir(fixtureMetadata)
 neoForge {
     version = providers.gradleProperty("neo_version").get()
     mods {
-        create(templateModId) {
+        create(recipeModId) {
             sourceSet(sourceSets.main.get())
             sourceSet(project(":core").sourceSets.main.get())
         }
     }
-    mods.create("${templateModId}_tests") { sourceSet(gametest) }
+    mods.create("${recipeModId}_tests") { sourceSet(gametest) }
     runs {
         create("client") {
             client()
@@ -80,31 +80,25 @@ neoForge {
             programArgument("--nogui")
             gameDirectory.set(rootProject.file(".local/server"))
         }
-        create("data") {
-            data()
-            gameDirectory.set(rootProject.file(".local/data"))
-            programArguments.addAll(
-                "--mod",
-                templateModId,
-                "--all",
-                "--output",
-                file("src/generated/resources").absolutePath,
-                "--existing",
-                file("src/main/resources").absolutePath,
-            )
+        create("serverDump") {
+            server()
+            programArgument("--nogui")
+            gameDirectory.set(rootProject.file(".local/dump-server"))
+            systemProperty("recipedump.enabled", "true")
+            systemProperty("recipedump.output", rootProject.file(".local/dump-server/recipes.json").absolutePath)
         }
         create("gameTestServer") {
             type = "gameTestServer"
             gameDirectory.set(rootProject.file(".local/gametest"))
-            systemProperty("neoforge.enabledGameTestNamespaces", templateModId)
+            systemProperty("neoforge.enabledGameTestNamespaces", recipeModId)
         }
     }
     runs.configureEach {
-        loadedMods.set(listOf(mods.getByName(templateModId)))
+        loadedMods.set(listOf(mods.getByName(recipeModId)))
     }
     runs.getByName("gameTestServer").apply {
         sourceSet = gametest
-        loadedMods.set(listOf(mods.getByName(templateModId), mods.getByName("${templateModId}_tests")))
+        loadedMods.set(listOf(mods.getByName(recipeModId), mods.getByName("${recipeModId}_tests")))
     }
     ideSyncTask(metadata)
 }
@@ -122,19 +116,17 @@ tasks.jar {
 val verifyModJar =
     tasks.register<VerifyModJarTask>("verifyModJar") {
         modJar.set(tasks.jar.flatMap { it.archiveFile })
-        modId.set(templateModId)
+        modId.set(recipeModId)
         val path = providers.gradleProperty("mod_package").get().replace('.', '/')
         packagePath.set(path)
         requiredEntries.set(
             listOf(
-                "$path/core/QuantityRulesKt.class",
-                "$path/ModItems.class",
+                "$path/core/DumpJson.class",
+                "$path/core/DumpReports.class",
+                "$path/RecipeDumpMod.class",
+                "$path/SnapshotCollector.class",
                 "META-INF/neoforge.mods.toml",
                 "META-INF/LICENSE",
-                "assets/$templateModId/lang/en_us.json",
-                "assets/$templateModId/lang/ja_jp.json",
-                "assets/$templateModId/models/item/sample_token.json",
-                "data/$templateModId/recipe/sample_token.json",
             ),
         )
     }

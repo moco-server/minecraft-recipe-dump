@@ -1,5 +1,5 @@
 {
-  "name": "minecraft-mod-template-tools",
+  "name": "minecraft_recipe_dump-tools",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.8.1",

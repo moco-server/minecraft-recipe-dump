@@ -10,7 +10,7 @@ allprojects {
     version = providers.gradleProperty("mod_version").get()
     repositories { mavenCentral() }
 }
-tasks.named("check") { dependsOn(":core:check", ":neoforge:check") }
+tasks.named("check") { dependsOn(":core:check", ":neoforge:check", ":cli:check") }
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
