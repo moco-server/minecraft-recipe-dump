@@ -1,5 +1,6 @@
 package org.mocoserver.recipedump.tests
 
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.resources.ResourceLocation
@@ -17,6 +18,21 @@ import org.mocoserver.recipedump.core.DumpJson
 @GameTestHolder(RecipeDumpMod.ID)
 @PrefixGameTestTemplate(false)
 object RecipeDumpGameTests {
+    @JvmStatic
+    @GameTest(template = "empty")
+    fun collectsRegisteredItems(helper: GameTestHelper) {
+        val dump = DumpJson.decode(SnapshotCollector.collect(requireNotNull(helper.level.server)).toString())
+        val actual = dump.getAsJsonArray("items").map { it.asString }
+        val expected =
+            BuiltInRegistries.ITEM
+                .keySet()
+                .map { it.toString() }
+                .sorted()
+        helper.assertTrue(actual == expected, "Snapshot must contain every registered item exactly once in order")
+        helper.assertTrue("minecraft:air" in actual && "minecraft:diamond" in actual, "Required vanilla items missing")
+        helper.succeed()
+    }
+
     @JvmStatic
     @GameTest(template = "empty")
     fun collectsLoadedRecipes(helper: GameTestHelper) {

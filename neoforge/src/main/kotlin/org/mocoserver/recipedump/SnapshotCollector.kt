@@ -31,6 +31,16 @@ object SnapshotCollector {
             add("selectedPacks", JsonArray().apply { server.packRepository.selectedIds.forEach(::add) })
             add("recipes", recipes)
             add("itemTags", itemTags())
+            add(
+                "items",
+                JsonArray().apply {
+                    BuiltInRegistries.ITEM
+                        .keySet()
+                        .map { it.toString() }
+                        .sorted()
+                        .forEach(::add)
+                },
+            )
             add("errors", errors)
             addProperty("complete", errors.isEmpty)
         }

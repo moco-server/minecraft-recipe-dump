@@ -79,3 +79,13 @@ GameTestは実RecipeManagerからのsnapshotとcodec再読み込み、および�
 未検証: KubeJS実物、他Loader／Minecraft版、Windowsネイティブでの起動、client・接続、後のティック／reloadでの変更、競合検査、ワールド生成前の終了。通常のダンプ取得にGUIは不要で、recipe viewerは導入していない。
 
 証拠のログ・JSON・入力hashは開発環境の.localへ保存しGit除外。利用者のワールドは使用していない。
+
+## 2026-10-03 後続CLI第2段階
+
+Java 21、Minecraft 1.21.1、NeoForge 21.1.252で`check :neoforge:build :neoforge:verifyModJar :cli:distZip :cli:installDist`成功。core 17件、CLI 9件、Node 29件成功。GameTestは追加したregistry完全一致・air／diamond存在を含む必須3件成功。
+
+通常配布JARを新しい検証instanceと各ケースの新規worldで実行した。Create 6.0.10、Mekanism配布JAR 10.7.19.85、Farmer's Delight 1.3.4、KFF 5.5.0で登録アイテム2,598件（Create namespace 699件）、baselineレシピ4,749件。itemsは重複なし・昇順。SAVEDマーカーと新runId、正常停止を確認した。既存出力の置換、未指定時の継続後console stop、非空ディレクトリ宛て保存のFAILEDと既存sentinel維持も確認した。JVM終了コードはいずれも0で、保存失敗の判定にはFAILEDマーカーを使った。
+
+独自datapackの条件付きincluded収集・excluded除外、diamond_blockの出力をdiamond×2へ上書き、実行時fixtureによるruntime_added追加・gold_block除外を再確認した。modified／dynamicは各4,750レシピ、アイテム数は各2,598件。配布CLIで一覧、namespace、タグ＋namespace、新旧タグ検索（planks 11件）、旧ダンプ一覧拒否を独立集計と照合した。並行サーバー検証中にJVMのスレッド資源警告がstdoutへ混ざったため、CLI照合はJAVA_OPTS=-XX:ActiveProcessorCount=2で実施し、JSONのみのstdoutを確認した。
+
+証拠は実装worktreeの.local/inventory-*.logと.local/integration/。未検証: registry列挙そのものの障害注入、他Minecraft／MOD版、対話的client。列挙失敗を握りつぶさない既存外側FAILED経路はコードで確認した。

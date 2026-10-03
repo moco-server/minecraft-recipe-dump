@@ -36,20 +36,26 @@ public object DumpSearch {
         tag: String? = null,
         namespace: String? = null,
     ): JsonObject {
-        val value = if (tag != null) {
-            dump.getAsJsonObject("itemTags").get(tag)
-        } else {
-            require(dump.has("items")) { "Item inventory is missing; recollect the dump to list all items" }
-            dump.get("items")
-        }
-        require(value == null || value.isJsonArray) { "Item tag $tag must be an array" }
-        val ids = value?.asJsonArray?.map { element ->
-            require(element.isJsonPrimitive && element.asJsonPrimitive.isString) {
-                "Item tag $tag must contain only string IDs"
+        val value =
+            if (tag != null) {
+                dump.getAsJsonObject("itemTags").get(tag)
+            } else {
+                require(dump.has("items")) { "Item inventory is missing; recollect the dump to list all items" }
+                dump.get("items")
             }
-            element.asString
-        }.orEmpty().filter { namespace == null || (':' in it && it.substringBefore(':') == namespace) }
-            .distinct().sorted()
+        require(value == null || value.isJsonArray) { "Item tag $tag must be an array" }
+        val ids =
+            value
+                ?.asJsonArray
+                ?.map { element ->
+                    require(element.isJsonPrimitive && element.asJsonPrimitive.isString) {
+                        "Item tag $tag must contain only string IDs"
+                    }
+                    element.asString
+                }.orEmpty()
+                .filter { namespace == null || (':' in it && it.substringBefore(':') == namespace) }
+                .distinct()
+                .sorted()
         val items = JsonArray()
         ids.forEach { items.add(it) }
         return JsonObject().apply {
@@ -61,5 +67,8 @@ public object DumpSearch {
     }
 
     /** 指定タグの解決済みIDを重複除去して昇順で返す。未登録は0件、不正な参照対象タグは拒否する。 */
-    public fun itemsByTag(dump: JsonObject, tag: String): JsonObject = items(dump, tag = tag)
+    public fun itemsByTag(
+        dump: JsonObject,
+        tag: String,
+    ): JsonObject = items(dump, tag = tag)
 }

@@ -197,7 +197,9 @@ class CliTest {
     }
 
     @Test
-    fun `inventory commands preserve old tags and require recollection for old listing`(@TempDir directory: Path) {
+    fun `inventory commands preserve old tags and require recollection for old listing`(
+        @TempDir directory: Path,
+    ) {
         val file = directory.resolve("dump.json")
         Files.writeString(file, fixture)
         val old = execute(listOf("items", file.toString()))
@@ -206,7 +208,14 @@ class CliTest {
         assertEquals("", old.output)
         val tag = execute(listOf("items", file.toString(), "--tag", "minecraft:planks", "--namespace", "minecraft"))
         assertEquals(0, tag.code)
-        assertEquals(2, JsonParser.parseString(tag.output).asJsonObject.get("count").asInt)
+        assertEquals(
+            2,
+            JsonParser
+                .parseString(tag.output)
+                .asJsonObject
+                .get("count")
+                .asInt,
+        )
         val input = JsonParser.parseString(fixture).asJsonObject
         input.add("items", JsonParser.parseString("[\"create:z\",\"minecraft:air\",\"create:a\"]"))
         Files.writeString(file, input.toString())
@@ -218,7 +227,14 @@ class CliTest {
             val result = execute(listOf("items", file.toString()) + options)
             assertEquals(0, result.code)
             assertEquals("", result.errors)
-            assertEquals(expected, JsonParser.parseString(result.output).asJsonObject.getAsJsonArray("items").map { it.asString })
+            assertEquals(
+                expected,
+                JsonParser
+                    .parseString(result.output)
+                    .asJsonObject
+                    .getAsJsonArray("items")
+                    .map { it.asString },
+            )
         }
     }
 

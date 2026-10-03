@@ -11,13 +11,28 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class ItemInventoryTest {
-    private fun dump(items: String? = null) = DumpJson.decode(
-        """{"schemaVersion":1,"complete":true,"errors":[],"recipes":[],"itemTags":{"test:tag":["test:z","minecraft:air","test:z"]}${items?.let { ",\"items\":$it" }.orEmpty()}}""",
-    )
+    private fun dump(items: String? = null) =
+        DumpJson.decode(
+            """{"schemaVersion":1,"complete":true,"errors":[],"recipes":[],"itemTags":{"test:tag":["test:z","minecraft:air","test:z"]}${items?.let {
+                ",\"items\":$it"
+            }.orEmpty()}}""",
+        )
 
     @Test
     fun `present inventory rejects malformed IDs null and duplicates`() {
-        for (invalid in listOf("null", "{}", "1", "[null]", "[1]", "[true]", "[\"\"]", "[\"air\"]", "[\"Minecraft:air\"]", "[\"a:b:c\"]", "[\"a:b\",\"a:b\"]")) {
+        for (invalid in listOf(
+            "null",
+            "{}",
+            "1",
+            "[null]",
+            "[1]",
+            "[true]",
+            "[\"\"]",
+            "[\"air\"]",
+            "[\"Minecraft:air\"]",
+            "[\"a:b:c\"]",
+            "[\"a:b\",\"a:b\"]",
+        )) {
             assertThrows(IllegalArgumentException::class.java, { dump(invalid) }, invalid)
         }
         assertEquals(0, dump("[]").getAsJsonArray("items").size())
@@ -45,13 +60,21 @@ class ItemInventoryTest {
     }
 
     @Test
-    fun `atomic replacement retains custom null and failed save retains other files`(@TempDir directory: Path) {
+    fun `atomic replacement retains custom null and failed save retains other files`(
+        @TempDir directory: Path,
+    ) {
         val output = directory.resolve("snapshot.json")
         Files.writeString(output, "old")
         val snapshot = dump()
         snapshot.add("custom", JsonParser.parseString("{\"value\":null}"))
         DumpJson.writeAtomic(output, snapshot)
-        assertTrue(JsonParser.parseString(Files.readString(output)).asJsonObject.getAsJsonObject("custom").has("value"))
+        assertTrue(
+            JsonParser
+                .parseString(Files.readString(output))
+                .asJsonObject
+                .getAsJsonObject("custom")
+                .has("value"),
+        )
         val before = Files.readString(output)
         assertThrows(java.io.IOException::class.java) { DumpJson.writeAtomic(directory, snapshot) }
         assertEquals(before, Files.readString(output))
