@@ -3,6 +3,7 @@ package org.mocoserver.recipedump.cli
 import com.google.gson.GsonBuilder
 import org.mocoserver.recipedump.core.DumpJson
 import org.mocoserver.recipedump.core.DumpReports
+import org.mocoserver.recipedump.core.DumpSearch
 import java.io.IOException
 import java.io.PrintStream
 import java.nio.file.Files
@@ -23,13 +24,15 @@ internal fun runCli(
 ): Int =
     try {
         val command = args.firstOrNull()
-        require(
-            (command in listOf("summary", "csv") && args.size == 2) ||
-                (command == "diff" && args.size == DIFF_ARGUMENT_COUNT),
-        ) { "Usage: recipe-dump summary|csv <dump.json> OR diff <before.json> <after.json>" }
+        val search = validateArguments(args)
         val dump = DumpJson.decode(Files.readString(Path.of(args[1])))
         val gson = GsonBuilder().setPrettyPrinting().create()
         when (command) {
+            "recipes" -> {
+                val filters = requireNotNull(search)
+                out.println(gson.toJson(DumpSearch.recipes(dump, filters.id, filters.type, filters.namespace)))
+            }
+            "items" -> out.println(gson.toJson(DumpSearch.itemsByTag(dump, requireNotNull(search?.tag))))
             "csv" -> out.print(DumpReports.csv(dump))
             "diff" ->
                 out.println(
@@ -47,4 +50,21 @@ internal fun runCli(
     } catch (exception: com.google.gson.JsonParseException) {
         err.println(exception.message)
         1
+    }
+
+private fun validateArguments(args: List<String>): SearchArguments? =
+    when (val command = args.firstOrNull()) {
+        "recipes", "items" -> {
+            require(args.size >= 2) { CLI_USAGE }
+            parseSearchArguments(command, args.drop(2))
+        }
+        "summary", "csv" -> {
+            require(args.size == 2) { CLI_USAGE }
+            null
+        }
+        "diff" -> {
+            require(args.size == DIFF_ARGUMENT_COUNT) { CLI_USAGE }
+            null
+        }
+        else -> throw IllegalArgumentException(CLI_USAGE)
     }
