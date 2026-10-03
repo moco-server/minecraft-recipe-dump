@@ -1,6 +1,6 @@
 # 第2段階: 全登録アイテム Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 全登録アイテムの一覧とnamespace検索を、新旧ダンプ互換性を保って提供する。
 
@@ -35,12 +35,12 @@
 
 **Interfaces:** internal `isItemId(value: String): Boolean`を共通化。public `DumpSearch.items(dump: JsonObject, tag: String? = null, namespace: String? = null): JsonObject`を追加。既存`itemsByTag(dump, tag)`は互換ラッパーとして維持する。
 
-- [ ] 失敗テスト追加: `inventoryValidation`はnull／非配列／非文字列／重複／空／大文字／コロン欠落を拒否し、`["test:z", "minecraft:air"]`と`[]`と欠落は受理。`inventorySearch`はタグにない`test:z`を返し、namespace完全一致・昇順・0件・結果deepCopyを確認。
-- [ ] `atomicSavePreservesNull`で既存出力を置換した後も`data.custom:null`が残ること、保存失敗で既存内容が維持されることを検査。
-- [ ] `./gradlew :core:test`で新しいアサーションが失敗することを確認。
-- [ ] `ItemIds.kt`に`[a-z0-9_.-]+:[a-z0-9/._-]+`判定を実装。DumpJson.decodeでitemsが存在する時だけ検証し、writerにserializeNullsを設定。DumpSearch.itemsはtagがあれば旧タグ集合、なければ必須inventoryを使い、namespaceをAND適用する。欠落時は再収集を案内するIllegalArgumentException。tag／namespaceキーは指定時だけ付ける。
-- [ ] `./gradlew :core:test`で新旧テスト全件成功を確認。
-- [ ] 対象ファイルをcommit: `feat: validate and search item inventory`。
+- [x] 失敗テスト追加: `inventoryValidation`はnull／非配列／非文字列／重複／空／大文字／コロン欠落を拒否し、`["test:z", "minecraft:air"]`と`[]`と欠落は受理。`inventorySearch`はタグにない`test:z`を返し、namespace完全一致・昇順・0件・結果deepCopyを確認。
+- [x] `atomicSavePreservesNull`で既存出力を置換した後も`data.custom:null`が残ること、保存失敗で既存内容が維持されることを検査。
+- [x] `./gradlew :core:test`で新しいアサーションが失敗することを確認。
+- [x] `ItemIds.kt`に`[a-z0-9_.-]+:[a-z0-9/._-]+`判定を実装。DumpJson.decodeでitemsが存在する時だけ検証し、writerにserializeNullsを設定。DumpSearch.itemsはtagがあれば旧タグ集合、なければ必須inventoryを使い、namespaceをAND適用する。欠落時は再収集を案内するIllegalArgumentException。tag／namespaceキーは指定時だけ付ける。
+- [x] `./gradlew :core:test`で新旧テスト全件成功を確認。
+- [x] 対象ファイルをcommit: `feat: validate and search item inventory`。
 
 ### Task 2: CLIの一覧・namespace検索
 
@@ -48,11 +48,11 @@
 
 **Interfaces:** Task 1の`DumpSearch.items`。SearchArgumentsの既存tag／namespaceを使用し、itemsで両方を任意にする。
 
-- [ ] `itemInventoryCommands`に全件、namespace、tag＋namespace、未知0件を追加。`oldDumpInventoryCompatibility`は旧タグ検索の結果形維持・旧タグ＋namespace成功・全件一覧stderr再収集案内とexit1を検査。`invalidItemOptionsBeforeIo`は重複・余分・欠値・空値を存在しないファイルより先に診断する。
-- [ ] `./gradlew :cli:test`で新ケースの失敗を確認。
-- [ ] parser／usage／Mainを更新し、itemsからTask 1のAPIを呼ぶ。metadata-only recipes／summary／csv／diffの形を維持。READMEと形式契約へ任意items、namespaceの意味、旧ダンプの境界を記載。
-- [ ] `./gradlew :cli:test :core:test`で全件成功を確認。
-- [ ] 対象ファイルをcommit: `feat: expose item inventory searches in CLI`。
+- [x] `itemInventoryCommands`に全件、namespace、tag＋namespace、未知0件を追加。`oldDumpInventoryCompatibility`は旧タグ検索の結果形維持・旧タグ＋namespace成功・全件一覧stderr再収集案内とexit1を検査。`invalidItemOptionsBeforeIo`は重複・余分・欠値・空値を存在しないファイルより先に診断する。
+- [x] `./gradlew :cli:test`で新ケースの失敗を確認。
+- [x] parser／usage／Mainを更新し、itemsからTask 1のAPIを呼ぶ。metadata-only recipes／summary／csv／diffの形を維持。READMEと形式契約へ任意items、namespaceの意味、旧ダンプの境界を記載。
+- [x] `./gradlew :cli:test :core:test`で全件成功を確認。
+- [x] 対象ファイルをcommit: `feat: expose item inventory searches in CLI`。
 
 ### Task 3: registry収集と通常JAR受け入れ
 
@@ -60,13 +60,13 @@
 
 **Interfaces:** 既存`SnapshotCollector.collect(server: MinecraftServer): JsonObject`の同一snapshotへitemsを追加。core／CLIのTask 1–2契約を消費。
 
-- [ ] GameTest `collectsRegisteredItems`を追加し、一覧がregistry keySetと完全一致、重複なし、昇順、airとdiamondありを検査。lookup／assembleの既存テストも残す。
-- [ ] `./gradlew :neoforge:runGameTestServer`でitems欠落により失敗することを確認。
-- [ ] collect内でBuiltInRegistries.ITEM.keySetをID化・ソートしてitemsへ追加。列挙失敗は握りつぶさず既存FAILED経路へ渡す。recipe単位codecエラー、取得タイミング・有効化・停止は維持する。
-- [ ] 共通検証を実行し、GameTest新規ケースも実際に実行されたことを確認。
-- [ ] .localに新規通常JARサーバー環境を作る。固定MOD版Create 6.0.10／Mekanism 10.7.19.85／FD 1.3.4で有効化時ダンプ＋停止、未指定時継続、既存出力置換、保存失敗を実測する。独自レシピ・上書き・除外・実行時変更の既存fixtureも新形式で再検証する。
-- [ ] 配布CLIで新旧ダンプのTask 2ケースを独立JSON集計と照合。アイテム件数／namespace件数、保存成功マーカー、終了・失敗ログを別々に記録し、設計状態を実装済みへ更新。
-- [ ] 対象ファイルをcommit: `feat: collect registered item inventory`。
+- [x] GameTest `collectsRegisteredItems`を追加し、一覧がregistry keySetと完全一致、重複なし、昇順、airとdiamondありを検査。lookup／assembleの既存テストも残す。
+- [x] `./gradlew :neoforge:runGameTestServer`でitems欠落により失敗することを確認。
+- [x] collect内でBuiltInRegistries.ITEM.keySetをID化・ソートしてitemsへ追加。列挙失敗は握りつぶさず既存FAILED経路へ渡す。recipe単位codecエラー、取得タイミング・有効化・停止は維持する。
+- [x] 共通検証を実行し、GameTest新規ケースも実際に実行されたことを確認。
+- [x] .localに新規通常JARサーバー環境を作る。固定MOD版Create 6.0.10／Mekanism 10.7.19.85／FD 1.3.4で有効化時ダンプ＋停止、未指定時継続、既存出力置換、保存失敗を実測する。独自レシピ・上書き・除外・実行時変更の既存fixtureも新形式で再検証する。
+- [x] 配布CLIで新旧ダンプのTask 2ケースを独立JSON集計と照合。アイテム件数／namespace件数、保存成功マーカー、終了・失敗ログを別々に記録し、設計状態を実装済みへ更新。
+- [x] 対象ファイルをcommit: `feat: collect registered item inventory`。
 
 ## 共通検証
 

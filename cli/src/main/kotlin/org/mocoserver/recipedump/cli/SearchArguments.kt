@@ -5,8 +5,9 @@ import org.mocoserver.recipedump.core.DumpSearch
 internal const val CLI_USAGE: String =
     "Usage: recipe-dump summary|csv <dump.json> OR diff <before.json> <after.json>\n" +
         "       recipe-dump recipes <dump.json> [--id <id>] [--type <type>] [--namespace <namespace>]" +
-        " [--uses <item-id>] [--produces <item-id>]\n" +
-        "       recipe-dump items <dump.json> [--tag <tag>] [--namespace <namespace>]"
+        " [--uses <item-id>] [--produces <item-id>] [--station <item-id>]\n" +
+        "       recipe-dump items <dump.json> [--tag <tag>] [--namespace <namespace>]\n" +
+        "       recipe-dump stations <dump.json>"
 
 internal data class SearchArguments(
     val id: String? = null,
@@ -15,6 +16,7 @@ internal data class SearchArguments(
     val tag: String? = null,
     val uses: String? = null,
     val produces: String? = null,
+    val station: String? = null,
 )
 
 /** 使用法エラーをI/Oより先に診断するため、オプションと値の組をここで検証する。 */
@@ -24,7 +26,7 @@ internal fun parseSearchArguments(
 ): SearchArguments {
     val allowed =
         if (command == "recipes") {
-            setOf("--id", "--type", "--namespace", "--uses", "--produces")
+            setOf("--id", "--type", "--namespace", "--uses", "--produces", "--station")
         } else {
             setOf("--tag", "--namespace")
         }
@@ -39,7 +41,7 @@ internal fun parseSearchArguments(
         }
         values[option] = value
     }
-    for (option in listOf("--uses", "--produces")) {
+    for (option in listOf("--uses", "--produces", "--station")) {
         require(values[option]?.let(DumpSearch::isItemId) != false) { "Invalid item ID for $option\n$CLI_USAGE" }
     }
     return SearchArguments(
@@ -49,5 +51,6 @@ internal fun parseSearchArguments(
         values["--tag"],
         values["--uses"],
         values["--produces"],
+        values["--station"],
     )
 }

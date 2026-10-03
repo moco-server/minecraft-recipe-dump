@@ -1,6 +1,8 @@
 package org.mocoserver.recipedump.cli
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import org.mocoserver.recipedump.core.DumpJson
 import org.mocoserver.recipedump.core.DumpReports
 import org.mocoserver.recipedump.core.DumpSearch
@@ -30,31 +32,22 @@ internal fun runCli(
         // レシピ行全体の保持契約では、独自codecや追加フィールドの明示的なnullも失わせない。
         if (command == "recipes") gsonBuilder.serializeNulls()
         val gson = gsonBuilder.create()
-        val status =
-            when (command) {
-                "recipes" -> {
-                    val filters = requireNotNull(search)
-                    val result =
-                        DumpSearch.recipes(
-                            dump,
-                            filters.id,
-                            filters.type,
-                            filters.namespace,
-                            filters.uses,
-                            filters.produces,
+        when (command) {
+            "recipes" -> printRecipeSearch(dump, requireNotNull(search), gson, out)
+            else -> {
+                when (command) {
+                    "stations" -> out.println(gson.toJson(DumpSearch.stations(dump)))
+                    "items" -> out.println(gson.toJson(DumpSearch.items(dump, search?.tag, search?.namespace)))
+                    "csv" -> out.print(DumpReports.csv(dump))
+                    "diff" ->
+                        out.println(
+                            gson.toJson(DumpReports.diff(dump, DumpJson.decode(Files.readString(Path.of(args[2]))))),
                         )
-                    out.println(gson.toJson(result))
-                    if (result.getAsJsonObject("analysis")?.get("exhaustive")?.asBoolean == false) 2 else 0
+                    else -> out.println(gson.toJson(DumpReports.summary(dump)))
                 }
-                "items" -> out.println(gson.toJson(DumpSearch.items(dump, search?.tag, search?.namespace)))
-                "csv" -> out.print(DumpReports.csv(dump))
-                "diff" ->
-                    out.println(
-                        gson.toJson(DumpReports.diff(dump, DumpJson.decode(Files.readString(Path.of(args[2]))))),
-                    )
-                else -> out.println(gson.toJson(DumpReports.summary(dump)))
+                0
             }
-        if (status is Int) status else 0
+        }
     } catch (exception: IllegalArgumentException) {
         err.println(exception.message)
         1
@@ -66,13 +59,33 @@ internal fun runCli(
         1
     }
 
+private fun printRecipeSearch(
+    dump: JsonObject,
+    filters: SearchArguments,
+    gson: Gson,
+    out: PrintStream,
+): Int {
+    val result =
+        DumpSearch.recipes(
+            dump,
+            filters.id,
+            filters.type,
+            filters.namespace,
+            filters.uses,
+            filters.produces,
+            filters.station,
+        )
+    out.println(gson.toJson(result))
+    return if (result.getAsJsonObject("analysis")?.get("exhaustive")?.asBoolean == false) 2 else 0
+}
+
 private fun validateArguments(args: List<String>): SearchArguments? =
     when (val command = args.firstOrNull()) {
         "recipes", "items" -> {
             require(args.size >= 2) { CLI_USAGE }
             parseSearchArguments(command, args.drop(2))
         }
-        "summary", "csv" -> {
+        "summary", "csv", "stations" -> {
             require(args.size == 2) { CLI_USAGE }
             null
         }

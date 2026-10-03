@@ -1,6 +1,6 @@
 # 第3段階: 材料・出力検索 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 明示対応したバニラserializerで材料・出力を検索し、未判定行を診断付きで返す。
 
@@ -36,11 +36,11 @@
 
 **Interfaces:** internal enum `MatchState { MATCH, NO_MATCH, UNKNOWN }`; internal data class `AnalysisIssue(code: String, path: String? = null)`; internal data class `MatchEvaluation(state: MatchState, evidence: List<JsonObject> = emptyList(), issues: List<AnalysisIssue> = emptyList())`。internal `anyMatch(values: List<MatchEvaluation>): MatchEvaluation`／`allMatch(values: List<MatchEvaluation>): MatchEvaluation`。internal `evaluateIngredient(value: JsonElement?, dump: JsonObject, item: String, path: String, role: String = "ingredient"): MatchEvaluation`。
 
-- [ ] `threeValuedCombinations`でOR真優先／AND偽優先・全既知・未知を検査。`ingredientShapesAndTags`でitem、tag、OR配列、空配列、空タグ、欠落タグ、無関係な不正タグ、誤型・item＋tag・type付き材料を検査し、path／role／tag根拠を固定する。
-- [ ] `./gradlew :core:test --tests '*IngredientAnalysisTest'`で未実装により失敗を確認。
-- [ ] 上記型と関数を実装。OR空はNO_MATCH。tagは要求されたタグのみ検査し、不正ID／値はinvalid_shape、欠落はmissing_tag、type付きはunsupported_ingredient。根拠は要求item一致だけ。三値合成後に確定した結果から不要な不明診断を除く。
-- [ ] 同コマンドで全ケース成功を確認。
-- [ ] commit: `feat: evaluate ingredient matches with explicit unknowns`。
+- [x] `threeValuedCombinations`でOR真優先／AND偽優先・全既知・未知を検査。`ingredientShapesAndTags`でitem、tag、OR配列、空配列、空タグ、欠落タグ、無関係な不正タグ、誤型・item＋tag・type付き材料を検査し、path／role／tag根拠を固定する。
+- [x] `./gradlew :core:test --tests '*IngredientAnalysisTest'`で未実装により失敗を確認。
+- [x] 上記型と関数を実装。OR空はNO_MATCH。tagは要求されたタグのみ検査し、不正ID／値はinvalid_shape、欠落はmissing_tag、type付きはunsupported_ingredient。根拠は要求item一致だけ。三値合成後に確定した結果から不要な不明診断を除く。
+- [x] 同コマンドで全ケース成功を確認。
+- [x] commit: `feat: evaluate ingredient matches with explicit unknowns`。
 
 ### Task 2: バニラserializerの方向別adapter
 
@@ -48,12 +48,12 @@
 
 **Interfaces:** internal `evaluateVanillaRecipe(dump: JsonObject, recipe: JsonObject, uses: String?, produces: String?): MatchEvaluation`。internal `evaluateItemOutput(value: JsonElement?, item: String, path: String): MatchEvaluation`はid／count形式の出力を読む。Task 1型を使用し、入力と出力の結果をallMatchで合成する。
 
-- [ ] 対象版codec由来の小さいJSON fixtureを全9 serializer（shaped、shapeless、4調理、stonecutting、smithing_transform、smithing_trim）から抽出。原snapshotとserializer／版を対応づけ、fixtureに出所をREADMEとして残す。
-- [ ] `vanillaDirections`で各serializerの一致・不一致と根拠pathを検査。`shapedUsedKeys`は未使用keyを無視し、使用key欠落をinvalid_shape。`independentDirections`は未知入力＋既知出力、trim入力一致＋出力unsupported_directionを検査。`invalidOutputShapes`は欠落／null／文字列result／小数・0・負count／不正IDをUNKNOWNと検査。空非空必須入力列と版欠落／違い、未知serializerも固定する。
-- [ ] `./gradlew :core:test --tests '*VanillaRecipeAnalysisTest'`で失敗を確認。
-- [ ] 明示serializerホワイトリストを実装。要求方向だけ読む。shapedはpatternの非空白使用文字、smithingは3入力、その他は設計表のfieldを読む。count省略は1、正整数必須。componentsを解析条件にせず、生JSONを変更しない。minecraft版不一致はunsupported_version、表外はunsupported_serializer。
-- [ ] 同テストと`:core:test`で成功を確認。
-- [ ] commit: `feat: analyze vanilla recipe inputs and outputs`。
+- [x] 対象版codec由来の小さいJSON fixtureを全9 serializer（shaped、shapeless、4調理、stonecutting、smithing_transform、smithing_trim）から抽出。原snapshotとserializer／版を対応づけ、fixtureに出所をREADMEとして残す。
+- [x] `vanillaDirections`で各serializerの一致・不一致と根拠pathを検査。`shapedUsedKeys`は未使用keyを無視し、使用key欠落をinvalid_shape。`independentDirections`は未知入力＋既知出力、trim入力一致＋出力unsupported_directionを検査。`invalidOutputShapes`は欠落／null／文字列result／小数・0・負count／不正IDをUNKNOWNと検査。空非空必須入力列と版欠落／違い、未知serializerも固定する。
+- [x] `./gradlew :core:test --tests '*VanillaRecipeAnalysisTest'`で失敗を確認。
+- [x] 明示serializerホワイトリストを実装。要求方向だけ読む。shapedはpatternの非空白使用文字、smithingは3入力、その他は設計表のfieldを読む。count省略は1、正整数必須。componentsを解析条件にせず、生JSONを変更しない。minecraft版不一致はunsupported_version、表外はunsupported_serializer。
+- [x] 同テストと`:core:test`で成功を確認。
+- [x] commit: `feat: analyze vanilla recipe inputs and outputs`。
 
 ### Task 3: 検索集計・CLI・配布受け入れ
 
@@ -61,12 +61,12 @@
 
 **Interfaces:** `DumpSearch.recipes(dump: JsonObject, id: String? = null, type: String? = null, namespace: String? = null, uses: String? = null, produces: String? = null): JsonObject`へ末尾引数追加。internal SearchArgumentsへuses／produces追加。新core public `DumpSearch.isItemId(value: String): Boolean`は第2段階のinternal判定へ委譲し、CLIがI/O前に呼ぶ。
 
-- [ ] `materialSearchPartition`でcandidate=analyzed+unsupported+unresolved、一致countはanalyzed以下、両原因はunresolved、診断ID／path／code順、一致行だけの根拠、行deepCopyとnull保持を検査。`metadataFilteringBeforeAnalysis`は未知形式除外後0件がexhaustive=true、材料条件なしの旧形不変を検査。`cliMaterialExitCodes`は完全0／エラー1／部分2とstderr空、ID構文エラーのI/O前拒否、旧ダンプitems欠落でも解析可能を検査。
-- [ ] `./gradlew :core:test :cli:test`で新ケースの失敗を確認。
-- [ ] metadata選択を先に適用してTask 2評価を呼ぶ。未判定行のみdiagnostics、一致行のみevidence、材料指定時のみanalysisを追加する。CLIはexhaustive=falseでexit2、通常エラーは既存exit1。Gson serializeNullsを維持。
-- [ ] `./gradlew :core:test :cli:test`で全件成功を確認。検索仕様と終了コード、候補と実作成可否の違い、未知材料の境界を文書へ追加。
-- [ ] 共通検証を実行。配布CLIで実snapshotのsmelting入力／出力、diamond_block、材料AND、全件の未対応件数を独立集計と照合。serializer別件数と未検証範囲を記録し、stage3状態を実装済みにする。
-- [ ] commit: `feat: expose diagnostic recipe material searches`。
+- [x] `materialSearchPartition`でcandidate=analyzed+unsupported+unresolved、一致countはanalyzed以下、両原因はunresolved、診断ID／path／code順、一致行だけの根拠、行deepCopyとnull保持を検査。`metadataFilteringBeforeAnalysis`は未知形式除外後0件がexhaustive=true、材料条件なしの旧形不変を検査。`cliMaterialExitCodes`は完全0／エラー1／部分2とstderr空、ID構文エラーのI/O前拒否、旧ダンプitems欠落でも解析可能を検査。
+- [x] `./gradlew :core:test :cli:test`で新ケースの失敗を確認。
+- [x] metadata選択を先に適用してTask 2評価を呼ぶ。未判定行のみdiagnostics、一致行のみevidence、材料指定時のみanalysisを追加する。CLIはexhaustive=falseでexit2、通常エラーは既存exit1。Gson serializeNullsを維持。
+- [x] `./gradlew :core:test :cli:test`で全件成功を確認。検索仕様と終了コード、候補と実作成可否の違い、未知材料の境界を文書へ追加。
+- [x] 共通検証を実行。配布CLIで実snapshotのsmelting入力／出力、diamond_block、材料AND、全件の未対応件数を独立集計と照合。serializer別件数と未検証範囲を記録し、stage3状態を実装済みにする。
+- [x] commit: `feat: expose diagnostic recipe material searches`。
 
 ## 共通検証
 

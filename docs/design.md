@@ -26,7 +26,7 @@ JVM終了コードは保存成功を保証しない。出力runIdをログに記
 
 一覧・CSV・レシピ差分に加え、レシピID／RecipeType／レシピIDのnamespaceによるAND検索と、解決済みアイテムタグの検索を提供する。検索用のJSON生成はcore、引数・I/O・表示はcliが担当する。IDのnamespaceは提供元JARの判定には使わない。同じsnapshotの登録キーから全アイテム一覧も収集し、タグまたは一覧へアイテムnamespace条件を適用する。旧ダンプはタグ検索を維持し、一覧検索は再収集を要求する。
 
-バニラ材料・出力検索はcoreの版・serializer限定adapterで必要方向だけ三値評価する。metadata条件後の候補を解析済み／未対応／未解決へ分割し、不明行は診断と部分終了コード2で明示する。items一覧は解析の前提にしない。装置名との対応は[段階的検索の設計](superpowers/specs/2026-10-03-cli-search-design.md)に沿って後続で検討する。
+バニラ材料・出力検索はcoreの版・serializer限定adapterで必要方向だけ三値評価する。metadata条件後の候補を解析済み／未対応／未解決へ分割し、不明行は診断と部分終了コード2で明示する。items一覧は解析の前提にしない。MOD固有JSONは固定版・明示serializer別の小さいadapterをcoreに置く。装置IDとRecipeTypeの版付き表を解析から独立させ、装置だけの検索ではcodecを読まない。対応範囲は[段階的検索の設計](superpowers/specs/2026-10-03-cli-search-design.md)とREADMEへ記載する。MOD API依存や装置能力の推測は追加しない。
 完全な競合検出、タグ／構成の差分、RecipeManager外の加工、任意インスタンス自動準備、ワールド生成前の終了、他Loader対応は含まない。後のティックやreloadによる変更もsnapshotに含まれると保証しない。
 
 今後は読み込み診断とrunId付き状態ファイルを先に検討する。競合検査を追加するなら対象RecipeTypeを明示する。対応版追加はアダプター別の実測で判断する。

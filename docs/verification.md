@@ -97,3 +97,32 @@ Java 21、Minecraft 1.21.1、NeoForge 21.1.252で`check :neoforge:build :neoforg
 配布CLIで通常JARの4,749レシピsnapshotを独立Python集計と照合した。全件diamond出力検索は解析済み2,680、未対応2,069、未解決0で終了コード2。smelting 118候補のiron_ingot出力およびraw_iron入力とのANDは全118件を評価でき終了コード0。diamond_blockの入力diamond／出力diamond_blockのAND、metadata絞り込み後0候補のexhaustiveも一致した。GameTest必須3件とNode 29件も成功。
 
 証拠は.local/material-*.log、.local/integration/vanilla-cli-result.log。この段階ではMOD固有serializerを未対応として数える。バニラ名のserializerでも独自材料や未知タグは部分検索になる。収集と停止は第2段階から変更していない。
+
+## 2026-10-03 後続CLI第4段階
+
+必須check／neoforge build／verifyModJar／cli distZip、installDist成功。core 37件、CLI 13件、GameTest必須3件、Node 29件成功。固定MODの実codec由来16 serializer fixtureに加え、複合材料三値・版違い・確率境界・Mek副出力組合せ・工具と保持入力・流体／化学物質未対応、版付き17装置表とCLIの終了コードを検査した。
+
+通常JARで取得した同じ4,749レシピsnapshotに配布CLIの23照合を実行。全MOD対象typeの出力を各serializer別に全件評価でき、独立集計と一致した。件数は以下の通り。
+
+| serializer | 評価した出力検索候補 |
+| --- | ---: |
+| create:crushing | 67 |
+| create:cutting | 143 |
+| create:deploying | 167 |
+| create:haunting | 21 |
+| create:item_application | 8 |
+| create:mechanical_crafting | 4 |
+| create:milling | 55 |
+| create:pressing | 8 |
+| create:sandpaper_polishing | 1 |
+| create:splashing | 37 |
+| farmersdelight:cooking | 28 |
+| farmersdelight:cutting | 105 |
+| mekanism:combining | 82 |
+| mekanism:crushing | 200 |
+| mekanism:enriching | 169 |
+| mekanism:sawing | 136 |
+
+全件diamond出力検索は解析済み3,911／未対応838／未解決0。全件iron_axe入力は3,858／820／71、diamondおよびraw_iron入力は各3,824／820／105。すべて独立三値評価・タグ解決と一致し、終了コード2。crushing_wheelとamethyst_shard出力のANDは全67候補を評価し、stationTypes根拠を確認。新旧ダンプのstationsは各17装置でID順。
+
+既存metadata／タグ検索は保存済み3 snapshotで39照合すべて一致。一覧検索の第2段階5ケースも再実行して一致した。証拠は.local/later-*.logと.local/integration/later-cli-result.log。Mekanismのheaderは10.7.19で、配布JAR 10.7.19.85以外のbuildを識別・保証できない。表外形式・他版・clientは未検証。

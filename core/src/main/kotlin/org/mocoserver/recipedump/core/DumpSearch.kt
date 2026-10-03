@@ -17,24 +17,65 @@ public object DumpSearch {
         namespace: String? = null,
         uses: String? = null,
         produces: String? = null,
+        station: String? = null,
     ): JsonObject {
         require(uses == null || isItemId(uses)) { "Invalid uses item ID" }
         require(produces == null || isItemId(produces)) { "Invalid produces item ID" }
+        val types = station?.let { stationTypes(dump, it) }
         val matches =
             dump
                 .getAsJsonArray("recipes")
                 .map { it.asJsonObject }
                 .filter { recipe ->
-                    val recipeId = recipe.get("id").asString
-                    (id == null || recipeId == id) &&
-                        (type == null || recipe.get("type").asString == type) &&
-                        (namespace == null || (':' in recipeId && recipeId.substringBefore(':') == namespace))
+                    matchesRecipeMetadata(recipe, id, type, namespace, types)
                 }.sortedBy { it.get("id").asString }
-        if (uses != null || produces != null) return analyzeRecipes(dump, matches, uses, produces)
         val rows = JsonArray()
         matches.forEach { rows.add(it.deepCopy()) }
+        val result =
+            if (uses != null ||
+                produces != null
+            ) {
+                analyzeRecipes(dump, matches, uses, produces)
+            } else {
+                JsonObject().apply {
+                    add("recipes", rows)
+                    addProperty("count", rows.size())
+                }
+            }
+        if (station != null) {
+            result.addProperty("station", station)
+            result.add("stationTypes", JsonArray().apply { requireNotNull(types).sorted().forEach(::add) })
+        }
+        return result
+    }
+
+    private fun matchesRecipeMetadata(
+        recipe: JsonObject,
+        id: String?,
+        type: String?,
+        namespace: String?,
+        types: Set<String>?,
+    ): Boolean {
+        val recipeId = recipe.get("id").asString
+        return (id == null || recipeId == id) &&
+            (type == null || recipe.get("type").asString == type) &&
+            (types == null || recipe.get("type").asString in types) &&
+            (namespace == null || (':' in recipeId && recipeId.substringBefore(':') == namespace))
+    }
+
+    /** ダンプの版で対応する装置をID順に返す。Minecraft版の欠落・不一致は拒否する。 */
+    public fun stations(dump: JsonObject): JsonObject {
+        val rows = JsonArray()
+        availableStations(dump).forEach { (id, types) ->
+            rows.add(
+                JsonObject().apply {
+                    addProperty("id", id)
+                    add("types", JsonArray().apply { types.sorted().forEach(::add) })
+                },
+            )
+        }
         return JsonObject().apply {
-            add("recipes", rows)
+            add("stations", rows)
             addProperty("count", rows.size())
         }
     }
