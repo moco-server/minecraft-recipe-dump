@@ -35,7 +35,7 @@ internal fun runCli(
                 val filters = requireNotNull(search)
                 out.println(gson.toJson(DumpSearch.recipes(dump, filters.id, filters.type, filters.namespace)))
             }
-            "items" -> out.println(gson.toJson(DumpSearch.itemsByTag(dump, requireNotNull(search?.tag))))
+            "items" -> out.println(gson.toJson(DumpSearch.items(dump, search?.tag, search?.namespace)))
             "csv" -> out.print(DumpReports.csv(dump))
             "diff" ->
                 out.println(

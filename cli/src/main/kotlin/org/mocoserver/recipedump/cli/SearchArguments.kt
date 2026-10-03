@@ -3,7 +3,7 @@ package org.mocoserver.recipedump.cli
 internal const val CLI_USAGE: String =
     "Usage: recipe-dump summary|csv <dump.json> OR diff <before.json> <after.json>\n" +
         "       recipe-dump recipes <dump.json> [--id <id>] [--type <type>] [--namespace <namespace>]\n" +
-        "       recipe-dump items <dump.json> --tag <tag>"
+        "       recipe-dump items <dump.json> [--tag <tag>] [--namespace <namespace>]"
 
 internal data class SearchArguments(
     val id: String? = null,
@@ -17,7 +17,7 @@ internal fun parseSearchArguments(
     command: String,
     args: List<String>,
 ): SearchArguments {
-    val allowed = if (command == "recipes") setOf("--id", "--type", "--namespace") else setOf("--tag")
+    val allowed = if (command == "recipes") setOf("--id", "--type", "--namespace") else setOf("--tag", "--namespace")
     val values = mutableMapOf<String, String>()
     for (pair in args.chunked(2)) {
         val option = pair[0]
@@ -29,6 +29,5 @@ internal fun parseSearchArguments(
         }
         values[option] = value
     }
-    require(command != "items" || "--tag" in values) { "items requires --tag\n$CLI_USAGE" }
     return SearchArguments(values["--id"], values["--type"], values["--namespace"], values["--tag"])
 }

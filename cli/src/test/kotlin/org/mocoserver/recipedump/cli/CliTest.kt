@@ -128,7 +128,6 @@ class CliTest {
                 listOf("recipes", file, "extra"),
                 listOf("recipes", file, "--id=create:a"),
                 listOf("recipes", file, "--tag", "minecraft:planks"),
-                listOf("items", file),
                 listOf("items", file, "--tag"),
                 listOf("items", file, "--tag", ""),
                 listOf("items", file, "--tag", "minecraft:planks", "--tag", "minecraft:planks"),
@@ -195,6 +194,32 @@ class CliTest {
             JsonParser.parseString("{\"added\":[],\"removed\":[],\"changed\":[]}"),
             JsonParser.parseString(diff.output),
         )
+    }
+
+    @Test
+    fun `inventory commands preserve old tags and require recollection for old listing`(@TempDir directory: Path) {
+        val file = directory.resolve("dump.json")
+        Files.writeString(file, fixture)
+        val old = execute(listOf("items", file.toString()))
+        assertEquals(1, old.code)
+        assertTrue(old.errors.contains("recollect"))
+        assertEquals("", old.output)
+        val tag = execute(listOf("items", file.toString(), "--tag", "minecraft:planks", "--namespace", "minecraft"))
+        assertEquals(0, tag.code)
+        assertEquals(2, JsonParser.parseString(tag.output).asJsonObject.get("count").asInt)
+        val input = JsonParser.parseString(fixture).asJsonObject
+        input.add("items", JsonParser.parseString("[\"create:z\",\"minecraft:air\",\"create:a\"]"))
+        Files.writeString(file, input.toString())
+        for ((options, expected) in listOf(
+            emptyList<String>() to listOf("create:a", "create:z", "minecraft:air"),
+            listOf("--namespace", "create") to listOf("create:a", "create:z"),
+            listOf("--namespace", "missing") to emptyList(),
+        )) {
+            val result = execute(listOf("items", file.toString()) + options)
+            assertEquals(0, result.code)
+            assertEquals("", result.errors)
+            assertEquals(expected, JsonParser.parseString(result.output).asJsonObject.getAsJsonArray("items").map { it.asString })
+        }
     }
 
     private data class Result(
