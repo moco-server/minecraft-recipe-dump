@@ -7,6 +7,7 @@
 | 収集MODを導入してダンプを作る | [収集MOD利用ガイド](guides/mod.md) |
 | ダンプをCLIで調べる | [CLI利用ガイド](guides/cli.md) |
 | ソースからビルド・検証する | [READMEの開発手順](../README.md#開発) |
+| タグからGitHub Releaseを公開する | [Releaseガイド](guides/release.md) |
 | 外部skillsを導入・更新する | [外部skills](guides/external-skills.md) |
 | テンプレート由来の基盤を更新する | [基盤更新](guides/template-updates.md) |
 | 保存JSONの契約を確認する | [ダンプ形式](reference/dump-format.md) |

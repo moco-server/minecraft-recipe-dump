@@ -24,9 +24,11 @@
 - 入力レシピ全件の解析成功。`loadDiagnostics=not-tracked` で、`complete` はsnapshotの書き出し成功を示す。
 - 表外のJSON形式、RecipeManager外の加工、完全な競合検出、全材料の充足やゲーム内での作成可否。
 
-ビルド、GameTest、通常配布JARの起動、配布CLIの実データ処理は別々の検証として扱う。JVM終了コード0だけでは保存成功と判定しない。公開配布先への公開とCLIガイドのZIP同梱は未実施。
+ビルド、GameTest、通常配布JARの起動、配布CLIの実データ処理は別々の検証として扱う。JVM終了コード0だけでは保存成功と判定しない。公開配布先への公開は未実施。CLIガイドのZIP同梱とCDは実装済みで、実際のGitHub Release作成は初回タグpushで確認する。
 
 ## 実測記録
+
+- [2026-10-03 Release CD](records/2026-10-03-release-cd.md): タグと版・成果物の検証、draft公開手順のAPI境界テスト、CLIガイド同梱、ビルド・新規ワールドのGameTest・配布ZIPの起動。
 
 - [2026-10-03 文書整理](records/2026-10-03-docs-reorganization.md): 文書分類・参照更新、開発scriptの新配置対応、ビルド・新規ワールドのGameTest・Nodeテスト。
 
