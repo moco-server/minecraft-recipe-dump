@@ -24,7 +24,7 @@ class StationCliTest {
             """.trimIndent(),
         )
         for ((args, code, count) in listOf(
-            Triple(listOf("stations", file.toString()), 0, 8),
+            Triple(listOf("stations", file.toString()), 0, 1),
             Triple(listOf("recipes", file.toString(), "--station", "minecraft:crafting_table"), 0, 1),
             Triple(
                 listOf(

@@ -3,7 +3,7 @@ package org.mocoserver.recipedump.core
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
-/** 検証済みsnapshotを検索する。Minecraftを起動せず、材料は版とserializerを限定して解釈する。 */
+/** 検証済みsnapshotを検索する。Minecraftを起動せず、材料はserializerとJSON形式を基に解釈する。 */
 public object DumpSearch {
     /**
      * 完全一致の条件をANDで適用する。結果は入力と可変状態を共有しない。不正な検索アイテムIDは拒否する。
@@ -21,7 +21,7 @@ public object DumpSearch {
     ): JsonObject {
         require(uses == null || isItemId(uses)) { "Invalid uses item ID" }
         require(produces == null || isItemId(produces)) { "Invalid produces item ID" }
-        val types = station?.let { stationTypes(dump, it) }
+        val types = station?.let { stationTypes(it) }
         val matches =
             dump
                 .getAsJsonArray("recipes")
@@ -63,7 +63,7 @@ public object DumpSearch {
             (namespace == null || (':' in recipeId && recipeId.substringBefore(':') == namespace))
     }
 
-    /** ダンプの版で対応する装置をID順に返す。Minecraft版の欠落・不一致は拒否する。 */
+    /** ダンプ内のRecipeTypeに対応する既知の装置別名をID順に返す。実際の装置登録や能力は判定しない。 */
     public fun stations(dump: JsonObject): JsonObject {
         val rows = JsonArray()
         availableStations(dump).forEach { (id, types) ->
@@ -80,7 +80,7 @@ public object DumpSearch {
         }
     }
 
-    /** 対象版の完全修飾アイテムID構文を判定する。レジストリの存在確認はしない。 */
+    /** 完全修飾アイテムID構文を判定する。レジストリの存在確認はしない。 */
     public fun isItemId(value: String): Boolean =
         org.mocoserver.recipedump.core
             .isItemId(value)

@@ -78,22 +78,32 @@ class ModRecipeAnalysisTest {
     }
 
     @Test
-    fun `wrong versions and unlisted fluid chemical serializers stay unsupported`() {
-        for (name in listOf("create_crushing", "mekanism_crushing", "farmersdelight_cutting")) {
-            val row = fixture(name)
-            val missing = metadata().apply { remove("mods") }
-            assertEquals(
-                "unsupported_version",
-                query(row, produces = "minecraft:stone", dump = missing).issues.single().code,
-            )
-            val wrong =
-                metadata().apply {
-                    getAsJsonArray(
-                        "mods",
-                    ).forEach { it.asJsonObject.addProperty("version", "other") }
-                }
-            assertEquals("unsupported_version", query(row, uses = "minecraft:stone", dump = wrong).issues.single().code)
+    fun `MOD formats are searched regardless of version metadata`() {
+        for ((name, input, output) in listOf(
+            Triple("create_crushing", "minecraft:amethyst_block", "minecraft:amethyst_shard"),
+            Triple("mekanism_crushing", "minecraft:polished_andesite", "minecraft:andesite"),
+            Triple("farmersdelight_cooking", "minecraft:apple", "farmersdelight:apple_cider"),
+        )) {
+            for (header in listOf(
+                "{}",
+                """{"minecraft":"future","mods":[{"id":"create","version":"future"},
+                {"id":"mekanism","version":"future"},{"id":"farmersdelight","version":"future"}]}""",
+            )) {
+                val dump =
+                    JsonParser.parseString(header).asJsonObject.apply {
+                        add("itemTags", metadata().get("itemTags"))
+                    }
+                val row = fixture(name)
+                assertEquals(MatchState.MATCH, query(row, input, output, dump).state, name)
+                row.getAsJsonObject("data").remove(if (name.startsWith("create")) "results" else "result")
+                if (name.startsWith("mekanism")) row.getAsJsonObject("data").remove("output")
+                assertEquals("invalid_shape", query(row, produces = output, dump = dump).issues.single().code)
+            }
         }
+    }
+
+    @Test
+    fun `unlisted fluid chemical serializers stay unsupported`() {
         for (serializer in listOf(
             "create:mixing",
             "create:compacting",

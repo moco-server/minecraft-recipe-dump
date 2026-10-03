@@ -24,7 +24,6 @@ internal fun evaluateVanillaRecipe(
 ): MatchEvaluation {
     val serializer = recipe.get("serializer").asString
     return when {
-        dump.get("minecraft").stringValue() != "1.21.1" -> unknown("unsupported_version")
         serializer !in vanillaSerializers -> unknown("unsupported_serializer")
         else -> evaluateVanillaDirections(dump, recipe, uses, produces)
     }

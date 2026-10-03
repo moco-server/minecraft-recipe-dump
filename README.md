@@ -48,9 +48,9 @@ Java 21を `JAVA_HOME` に設定します。Windowsは `gradlew.bat` と `recipe
 - `items`: 全登録アイテムID一覧。任意の `--tag` と `--namespace` をANDで指定できます。タグ検索は旧ダンプでも利用でき、全件一覧は新しい収集MODで再収集した `items` が必要です。
 
 検索値は完全一致で、namespaceの省略補完や部分一致は行いません。`--namespace` は検索対象のレシピIDまたはアイテムIDのコロン前の文字列に適用し、実際の提供元MOD／JARや材料・出力の所属は判定しません。
-装置は `recipes dump.json --station minecraft:furnace` のように完全修飾アイテムIDで指定し、`stations dump.json` で対象ダンプの版に対応する装置を一覧できます。材料・出力は `--uses minecraft:iron_ingot`／`--produces minecraft:iron_ingot` を任意のAND条件として指定します。
+装置は `recipes dump.json --station minecraft:furnace` のように完全修飾アイテムIDで指定し、`stations dump.json` で対象ダンプにあるRecipeTypeに対応する既知の装置別名を一覧できます。材料・出力は `--uses minecraft:iron_ingot`／`--produces minecraft:iron_ingot` を任意のAND条件として指定します。
 
-`recipes` のJSON結果は `recipes` 配列と `count`、`items` は `items` 配列・`count` と、指定時のみ `tag`・`namespace` を持ちます。ID順で出力し、タグ内の重複アイテムは除去します。未知のID・type・namespace・タグによる0件検索も終了コード0です。材料検索はMinecraft 1.21.1の対応バニラserializerと下表の固定MOD形式を解析し、未知形式を含む部分検索はJSONをstdoutへ返して終了コード2になります。analysis／diagnostics／evidenceで未判定件数と根拠を確認できます。
+`recipes` のJSON結果は `recipes` 配列と `count`、`items` は `items` 配列・`count` と、指定時のみ `tag`・`namespace` を持ちます。ID順で出力し、タグ内の重複アイテムは除去します。未知のID・type・namespace・タグによる0件検索も終了コード0です。材料検索は対応serializerのJSON形式を解析し、Minecraft／MODの版情報では対象を制限せず、未知形式を含む部分検索はJSONをstdoutへ返して終了コード2になります。analysis／diagnostics／evidenceで未判定件数と根拠を確認できます。
 オプションは `--name value` 形式のみ。同じオプションの重複、未知のオプション、値不足・空値、余分な位置引数は拒否します。診断はstderrへ出します。
 
 不完全なダンプ、未対応のschema、重複ID、読み込み失敗、使用法の誤りではCLIが非ゼロ終了します。競合やゲーム内の成立可否を自動判定するコマンドはありません。
@@ -86,15 +86,17 @@ LLMは [AGENTS.md](AGENTS.md) と必要なrepo内skillを読みます。[設計]
 
 材料・出力は完全修飾アイテムIDの候補検索です。全材料の充足・必要数量・ゲーム内の作成可否は判定しません。出力が読めれば独自材料があっても出力方向だけの検索は可能です。空タグは不一致、参照タグ欠落は不明です。動的出力・独自材料は診断に残します。
 
-## 初期MOD検索の対応範囲
+## 材料JSONの解析形式と検証済み構成
 
-| MOD（配布JAR） | adapter選択のmods.version | 対応serializer（namespace省略） | 装置ID（namespace省略） |
+CLIはダンプJSONを調べるインターフェースです。以下の版は検証に使った構成で、検索対象を限定する条件ではありません。`minecraft`／`mods.version`が異なる・欠ける場合も、同じserializerの読めるJSON形式を検索します。未知serializerは未対応、必要フィールドの欠落や不正形は未解決として診断します。他版のゲーム動作や、同じ形で意味が変わった形式の互換性を保証するものではありません。
+
+| 検証済みMOD（配布JAR） | 実測mods.version | 対応serializer（namespace省略） | 装置ID（namespace省略） |
 | --- | --- | --- | --- |
 | Create 6.0.10 | 6.0.10 | crushing, cutting, haunting, item_application, milling, pressing, sandpaper_polishing, splashing, deploying, mechanical_crafting | crushing_wheel, millstone, mechanical_saw, deployer |
 | Mekanism 10.7.19.85 | 10.7.19 | crushing, enriching, combining, sawing | crusher, enrichment_chamber, precision_sawmill |
 | Farmer's Delight 1.3.4 | 1.3.4 | cooking, cutting | cooking_pot, cutting_board |
 
-バニラ装置はcrafting_table、furnace、blast_furnace、smoker、campfire／soul_campfire、stonecutter、smithing_table。対象表・版が一致しない装置検索は終了コード1です。装置対応表はRecipeTypeへの検索入口で、装置の全能力・代替・複合設備は保証しません。Mekanismのmods.versionはbuild番号を持たず、10.7.19.85以外のJARの同一性・互換性は確認できません。
+バニラ装置はcrafting_table、furnace、blast_furnace、smoker、campfire／soul_campfire、stonecutter、smithing_table。対応表にない装置別名は終了コード1です（RecipeTypeが分かれば`--type`で直接検索できます）。既知の装置別名は版情報に関係なく検索でき、対応するレシピがなければ正常0件です。装置対応表はRecipeTypeへの検索入口で、装置の全能力・代替・複合設備は保証しません。Mekanismのmods.versionはbuild番号を持たず、10.7.19.85以外のJARの同一性・互換性は確認できません。
 
 NeoForgeのcompound／intersection／difference材料を三値で評価します。成分条件、block tag、未知の独自材料、FDのitem_abilityは不明を維持します。Createの液体処理・sequenced assembly、Mekanismの化学物質／液体形式、表外の動的クラフトは未対応です。
 

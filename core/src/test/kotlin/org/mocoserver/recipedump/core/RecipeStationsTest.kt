@@ -22,60 +22,27 @@ class RecipeStationsTest {
         )
 
     @Test
-    fun `station table is version selected and sorted without inventory requirement`() {
-        val expected =
-            mapOf(
-                "minecraft:crafting_table" to "minecraft:crafting",
-                "minecraft:furnace" to "minecraft:smelting",
-                "minecraft:blast_furnace" to "minecraft:blasting",
-                "minecraft:smoker" to "minecraft:smoking",
-                "minecraft:campfire" to "minecraft:campfire_cooking",
-                "minecraft:soul_campfire" to "minecraft:campfire_cooking",
-                "minecraft:stonecutter" to "minecraft:stonecutting",
-                "minecraft:smithing_table" to "minecraft:smithing",
-                "create:crushing_wheel" to "create:crushing",
-                "create:millstone" to "create:milling",
-                "create:mechanical_saw" to "create:cutting",
-                "create:deployer" to "create:deploying",
-                "mekanism:crusher" to "mekanism:crushing",
-                "mekanism:enrichment_chamber" to "mekanism:enriching",
-                "mekanism:precision_sawmill" to "mekanism:sawing",
-                "farmersdelight:cooking_pot" to "farmersdelight:cooking",
-                "farmersdelight:cutting_board" to "farmersdelight:cutting",
-            )
-        val result = DumpSearch.stations(dump())
-        assertEquals(17, result.get("count").asInt)
-        val rows = result.getAsJsonArray("stations").map { it.asJsonObject }
-        assertEquals(expected.keys.sorted(), rows.map { it.get("id").asString })
-        rows.forEach {
-            assertEquals(
-                listOf(expected[it.get("id").asString]),
-                it.getAsJsonArray("types").map { type ->
-                    type.asString
-                },
-            )
-        }
-        val old = dump().apply { remove("mods") }
-        assertEquals(8, DumpSearch.stations(old).get("count").asInt)
-        assertThrows(
-            IllegalArgumentException::class.java,
-        ) { DumpSearch.recipes(old, station = "create:crushing_wheel") }
-        for (version in listOf("1.20.1", null)) {
-            val unsupported =
-                dump().apply {
-                    if (version ==
-                        null
-                    ) {
-                        remove("minecraft")
-                    } else {
-                        addProperty("minecraft", version)
-                    }
+    fun `station listing follows captured types without version or inventory requirements`() {
+        for (header in listOf("{}", """{"minecraft":"future","mods":[{"id":"create","version":"future"}]}""")) {
+            val snapshot =
+                JsonParser.parseString(header).asJsonObject.apply {
+                    add("recipes", dump().get("recipes"))
+                    add("itemTags", dump().get("itemTags"))
                 }
-            assertThrows(IllegalArgumentException::class.java) { DumpSearch.stations(unsupported) }
-            assertThrows(
-                IllegalArgumentException::class.java,
-            ) { DumpSearch.recipes(unsupported, station = "minecraft:furnace") }
+            val result = DumpSearch.stations(snapshot)
+            assertEquals(2, result.get("count").asInt)
+            assertEquals(
+                JsonParser.parseString(
+                    """[{"id":"create:crushing_wheel","types":["create:crushing"]},
+                {"id":"minecraft:crafting_table","types":["minecraft:crafting"]}]""",
+                ),
+                result.get("stations"),
+            )
+            assertEquals(1, DumpSearch.recipes(snapshot, station = "create:crushing_wheel").get("count").asInt)
+            assertEquals(0, DumpSearch.recipes(snapshot, station = "minecraft:furnace").get("count").asInt)
         }
+        val empty = dump().apply { add("recipes", JsonParser.parseString("[]")) }
+        assertEquals(0, DumpSearch.stations(empty).get("count").asInt)
     }
 
     @Test

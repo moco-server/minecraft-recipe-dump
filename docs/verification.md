@@ -132,3 +132,14 @@ Java 21、Minecraft 1.21.1、NeoForge 21.1.252で`check :neoforge:build :neoforg
 新規contextのread-onlyレビュアー1名が第2〜4段階の全diffを確認。Critical／Minorなし、Important 1件（pattern使用key欠落を別keyの一致が隠す）を修正した。バニラshapedとCreate mechanical_craftingのcore回帰2件、CLI回帰1件が修正前に失敗し、key存在の先行検証で成功した。未使用key無視、材料ORの既知一致優先、出力だけの解析は維持する。
 
 修正後の必須check／build／verifyModJar／distZipとinstallDist成功、core 39件・CLI 14件成功。配布CLIで両形式の不正例がexit2、candidate1／analyzed0／unresolved1、invalid_shapeと$.key.Bになることを確認。実snapshotの新23／旧39／inventory5照合も再実行して一致した。最終GameTest必須3件とNode 29件も成功。証拠は.local/review-*-fix-red.log、.local/review-fix-green.log、.local/later-final-review.md。
+
+
+## JSONインターフェースとしてのCLI検索（2026-10-03）
+
+Minecraft／MODの版情報による検索gateを除去。版欠落／不一致でも同じserializer・JSON形式は解析し、未知serializer／必要field欠落は従来どおり診断する。stationsはsnapshot内のRecipeTypeに対応する既知別名を列挙し、既知別名で該当typeがない検索は正常0件。
+
+/tmp/recipe-dump-later-search（main 2aeda0cと同じ基点の隔離worktree）で新しい契約の回帰テストを先に実行し、core 3件とCLI 2件の期待どおりの失敗を確認。実装修正後にcore 40件・CLI 15件すべて成功。ktlintFormat、check／:neoforge:build／:neoforge:verifyModJar／:cli:distZip／:cli:installDist成功。静的解析で新テストのLongMethod 1件を検出し、診断結果の検証をtest helperへ分けて解消した。収集・保存・停止・配布MODの契約は変更していない。
+
+GameTest必須3件、結果検査script、Node 29件すべて成功。保存済み4,749レシピの実snapshotを配布CLIで処理し、既存MOD／装置／材料の独立23照合は一致。さらに全件出力・入力、装置＋出力、装置のみ、レシピnamespace、アイテムnamespace、stationsの7検索について、元の版情報・minecraft／mods削除・将来版を模した値の3構成で計21照合し、終了コードと結果JSON全体が一致した。元snapshotは別ファイルへコピーし、書き換えていない。他版のゲームやMODを新規起動した検証ではなく、JSON検索の版非依存を検証した。
+
+ローカルread-onlyレビューでCritical／Important／Minorの具体的指摘なし。証拠は隔離worktreeの.local/json-interface-{baseline,red,core-red,green,check,game,game-result,node,real,versions}.log。

@@ -25,17 +25,11 @@ private val stationTable =
     )
 
 internal fun availableStations(dump: JsonObject): Map<String, Set<String>> {
-    require(dump.get("minecraft").stringValue() == "1.21.1") { "Station lookup requires Minecraft 1.21.1 metadata" }
-    return stationTable
-        .filterKeys {
-            it.startsWith("minecraft:") || supportsModVersion(dump, it.substringBefore(':'))
-        }.toSortedMap()
+    val capturedTypes = dump.getAsJsonArray("recipes").map { it.asJsonObject.get("type").asString }.toSet()
+    return stationTable.filterValues { types -> types.any { it in capturedTypes } }.toSortedMap()
 }
 
-internal fun stationTypes(
-    dump: JsonObject,
-    station: String,
-): Set<String> {
+internal fun stationTypes(station: String): Set<String> {
     require(isItemId(station)) { "Invalid station item ID $station" }
-    return requireNotNull(availableStations(dump)[station]) { "Unsupported station $station for this dump's versions" }
+    return requireNotNull(stationTable[station]) { "Unknown station alias $station; use --type for a RecipeType ID" }
 }

@@ -115,14 +115,14 @@ class VanillaRecipeAnalysisTest {
     }
 
     @Test
-    fun `unsupported versions and serializers are diagnosed`() {
+    fun `vanilla formats ignore version metadata and diagnose unknown serializers`() {
         val row = fixture("smelting")
         for (version in listOf("1.20.1", null)) {
             val other = dump.deepCopy()
             if (version == null) other.remove("minecraft") else other.addProperty("minecraft", version)
             assertEquals(
-                "unsupported_version",
-                evaluateVanillaRecipe(other, row, "minecraft:potato", null).issues.single().code,
+                MatchState.MATCH,
+                evaluateVanillaRecipe(other, row, "minecraft:potato", "minecraft:baked_potato").state,
             )
         }
         row.addProperty("serializer", "minecraft:crafting_special_repairitem")

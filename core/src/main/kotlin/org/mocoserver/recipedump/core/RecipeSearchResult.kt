@@ -3,7 +3,7 @@ package org.mocoserver.recipedump.core
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
-private val unsupportedCodes = setOf("unsupported_serializer", "unsupported_direction", "unsupported_version")
+private val unsupportedCodes = setOf("unsupported_serializer", "unsupported_direction")
 
 internal fun analyzeRecipes(
     dump: JsonObject,
