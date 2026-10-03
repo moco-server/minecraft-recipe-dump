@@ -11,7 +11,16 @@ internal fun analyzeRecipes(
     uses: String?,
     produces: String?,
 ): JsonObject {
-    val evaluated = candidates.map { it to evaluateVanillaRecipe(dump, it, uses, produces) }
+    val evaluated =
+        candidates.map { row ->
+            val evaluation =
+                if (row.get("serializer").asString.startsWith("minecraft:")) {
+                    evaluateVanillaRecipe(dump, row, uses, produces)
+                } else {
+                    evaluateModRecipe(dump, row, uses, produces)
+                }
+            row to evaluation
+        }
     val matches = evaluated.filter { it.second.state == MatchState.MATCH }
     val undecidable = evaluated.filter { it.second.state == MatchState.UNKNOWN }
     val unresolved = undecidable.count { (_, evaluation) -> evaluation.issues.any { it.code !in unsupportedCodes } }

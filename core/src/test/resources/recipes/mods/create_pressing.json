@@ -1,0 +1,18 @@
+{
+  "id": "create:pressing/brass_ingot",
+  "type": "create:pressing",
+  "serializer": "create:pressing",
+  "data": {
+    "ingredients": [
+      {
+        "tag": "c:ingots/brass"
+      }
+    ],
+    "results": [
+      {
+        "id": "create:brass_sheet"
+      }
+    ],
+    "type": "create:pressing"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mekanism:enriching/charcoal",
+  "type": "mekanism:enriching",
+  "serializer": "mekanism:enriching",
+  "data": {
+    "input": {
+      "tag": "c:dusts/charcoal",
+      "count": 1
+    },
+    "output": {
+      "id": "minecraft:charcoal",
+      "count": 1
+    },
+    "type": "mekanism:enriching"
+  }
+}

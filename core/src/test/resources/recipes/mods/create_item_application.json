@@ -1,0 +1,21 @@
+{
+  "id": "create:item_application/andesite_casing_from_log",
+  "type": "create:item_application",
+  "serializer": "create:item_application",
+  "data": {
+    "ingredients": [
+      {
+        "tag": "c:stripped_logs"
+      },
+      {
+        "item": "create:andesite_alloy"
+      }
+    ],
+    "results": [
+      {
+        "id": "create:andesite_casing"
+      }
+    ],
+    "type": "create:item_application"
+  }
+}

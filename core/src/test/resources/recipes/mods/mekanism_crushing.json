@@ -1,0 +1,16 @@
+{
+  "id": "mekanism:crushing/andesite/from_polished",
+  "type": "mekanism:crushing",
+  "serializer": "mekanism:crushing",
+  "data": {
+    "input": {
+      "item": "minecraft:polished_andesite",
+      "count": 1
+    },
+    "output": {
+      "id": "minecraft:andesite",
+      "count": 1
+    },
+    "type": "mekanism:crushing"
+  }
+}

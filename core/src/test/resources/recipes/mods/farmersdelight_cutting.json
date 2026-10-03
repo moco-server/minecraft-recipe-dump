@@ -1,0 +1,39 @@
+{
+  "id": "farmersdelight:cutting/acacia_log",
+  "type": "farmersdelight:cutting",
+  "serializer": "farmersdelight:cutting",
+  "data": {
+    "tool": [
+      {
+        "action": "axe_strip",
+        "type": "farmersdelight:item_ability"
+      },
+      {
+        "tag": "minecraft:axes"
+      }
+    ],
+    "result": [
+      {
+        "item": {
+          "id": "minecraft:stripped_acacia_log",
+          "count": 1
+        }
+      },
+      {
+        "item": {
+          "id": "farmersdelight:tree_bark",
+          "count": 1
+        }
+      }
+    ],
+    "sound": {
+      "sound_id": "minecraft:item.axe.strip"
+    },
+    "ingredients": [
+      {
+        "item": "minecraft:acacia_log"
+      }
+    ],
+    "type": "farmersdelight:cutting"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "mekanism:combining/dye/black_to_light_gray",
+  "type": "mekanism:combining",
+  "serializer": "mekanism:combining",
+  "data": {
+    "main_input": {
+      "tag": "c:dyes/black",
+      "count": 1
+    },
+    "extra_input": {
+      "tag": "c:dyes/white",
+      "count": 2
+    },
+    "output": {
+      "id": "minecraft:light_gray_dye",
+      "count": 6
+    },
+    "type": "mekanism:combining"
+  }
+}

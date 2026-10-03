@@ -40,3 +40,12 @@ internal fun evaluateItemOutput(
             )
     }
 }
+
+internal fun evaluateFixedItemOutput(
+    value: JsonElement?,
+    item: String,
+    path: String,
+): MatchEvaluation {
+    val result = evaluateItemOutput(value, item, path)
+    return result.copy(evidence = result.evidence.map { it.deepCopy().apply { addProperty("chance", 1.0) } })
+}

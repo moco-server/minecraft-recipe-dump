@@ -1,0 +1,21 @@
+{
+  "id": "mekanism:compat/farmersdelight/sawing/chicken_cuts",
+  "type": "mekanism:sawing",
+  "serializer": "mekanism:sawing",
+  "data": {
+    "input": {
+      "item": "minecraft:cooked_chicken",
+      "count": 1
+    },
+    "main_output": {
+      "id": "farmersdelight:cooked_chicken_cuts",
+      "count": 2
+    },
+    "secondary_output": {
+      "id": "minecraft:bone_meal",
+      "count": 1
+    },
+    "secondary_chance": 1.0,
+    "type": "mekanism:sawing"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "create:haunting/blackstone",
+  "type": "create:haunting",
+  "serializer": "create:haunting",
+  "data": {
+    "ingredients": [
+      {
+        "tag": "c:cobblestones"
+      }
+    ],
+    "results": [
+      {
+        "id": "minecraft:blackstone"
+      }
+    ],
+    "type": "create:haunting"
+  }
+}

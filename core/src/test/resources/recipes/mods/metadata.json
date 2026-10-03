@@ -1,0 +1,103 @@
+{
+  "minecraft": "1.21.1",
+  "mods": [
+    {
+      "id": "create",
+      "version": "6.0.10"
+    },
+    {
+      "id": "farmersdelight",
+      "version": "1.3.4"
+    },
+    {
+      "id": "flywheel",
+      "version": "1.0.6"
+    },
+    {
+      "id": "kotlinforforge",
+      "version": "5.5.0"
+    },
+    {
+      "id": "mekanism",
+      "version": "10.7.19"
+    },
+    {
+      "id": "minecraft",
+      "version": "1.21.1"
+    },
+    {
+      "id": "minecraft_recipe_dump",
+      "version": "0.1.0-dev"
+    },
+    {
+      "id": "neoforge",
+      "version": "21.1.252"
+    },
+    {
+      "id": "ponder",
+      "version": "1.0.82+mc1.21.1"
+    }
+  ],
+  "itemTags": {
+    "c:cobblestones": [
+      "minecraft:cobbled_deepslate",
+      "minecraft:cobblestone",
+      "minecraft:infested_cobblestone",
+      "minecraft:mossy_cobblestone"
+    ],
+    "c:dusts/charcoal": [
+      "mekanism:dust_charcoal"
+    ],
+    "c:dyes/black": [
+      "minecraft:black_dye"
+    ],
+    "c:dyes/white": [
+      "minecraft:white_dye"
+    ],
+    "c:ingots/brass": [
+      "create:brass_ingot"
+    ],
+    "c:stones": [
+      "minecraft:andesite",
+      "minecraft:deepslate",
+      "minecraft:diorite",
+      "minecraft:granite",
+      "minecraft:stone",
+      "minecraft:tuff"
+    ],
+    "c:stripped_logs": [
+      "minecraft:stripped_acacia_log",
+      "minecraft:stripped_bamboo_block",
+      "minecraft:stripped_birch_log",
+      "minecraft:stripped_cherry_log",
+      "minecraft:stripped_crimson_stem",
+      "minecraft:stripped_dark_oak_log",
+      "minecraft:stripped_jungle_log",
+      "minecraft:stripped_mangrove_log",
+      "minecraft:stripped_oak_log",
+      "minecraft:stripped_spruce_log",
+      "minecraft:stripped_warped_stem"
+    ],
+    "minecraft:axes": [
+      "minecraft:diamond_axe",
+      "minecraft:golden_axe",
+      "minecraft:iron_axe",
+      "minecraft:netherite_axe",
+      "minecraft:stone_axe",
+      "minecraft:wooden_axe"
+    ],
+    "minecraft:planks": [
+      "minecraft:acacia_planks",
+      "minecraft:bamboo_planks",
+      "minecraft:birch_planks",
+      "minecraft:cherry_planks",
+      "minecraft:crimson_planks",
+      "minecraft:dark_oak_planks",
+      "minecraft:jungle_planks",
+      "minecraft:mangrove_planks",
+      "minecraft:oak_planks",
+      "minecraft:spruce_planks",
+      "minecraft:warped_planks"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "create:deploying/chiseled_copper_from_deoxidising",
+  "type": "create:deploying",
+  "serializer": "create:deploying",
+  "data": {
+    "ingredients": [
+      {
+        "item": "minecraft:exposed_chiseled_copper"
+      },
+      {
+        "tag": "minecraft:axes"
+      }
+    ],
+    "results": [
+      {
+        "id": "minecraft:chiseled_copper"
+      }
+    ],
+    "keep_held_item": true,
+    "type": "create:deploying"
+  }
+}

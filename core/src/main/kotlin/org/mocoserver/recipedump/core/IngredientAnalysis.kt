@@ -84,30 +84,49 @@ private fun ingredientMatch(
         )
     }
 
-private fun evaluateCompoundIngredient(ingredient: JsonObject, dump: JsonObject, item: String, path: String, role: String): MatchEvaluation =
+private fun evaluateCompoundIngredient(
+    ingredient: JsonObject,
+    dump: JsonObject,
+    item: String,
+    path: String,
+    role: String,
+): MatchEvaluation =
     when (ingredient.get("type").stringValue()) {
         "neoforge:compound", "neoforge:intersection" -> evaluateChildren(ingredient, dump, item, path, role)
         "neoforge:difference" -> {
             val base = evaluateIngredient(ingredient.get("base"), dump, item, "$path.base", role)
             val subtracted = evaluateIngredient(ingredient.get("subtracted"), dump, item, "$path.subtracted", role)
-            val inverse = when (subtracted.state) {
-                MatchState.MATCH -> MatchEvaluation(MatchState.NO_MATCH)
-                MatchState.NO_MATCH -> MatchEvaluation(MatchState.MATCH)
-                MatchState.UNKNOWN -> subtracted
-            }
+            val inverse =
+                when (subtracted.state) {
+                    MatchState.MATCH -> MatchEvaluation(MatchState.NO_MATCH)
+                    MatchState.NO_MATCH -> MatchEvaluation(MatchState.MATCH)
+                    MatchState.UNKNOWN -> subtracted
+                }
             allMatch(listOf(base, inverse))
         }
         else -> unknown("unsupported_ingredient", "$path.type")
     }
 
-private fun evaluateChildren(ingredient: JsonObject, dump: JsonObject, item: String, path: String, role: String): MatchEvaluation {
+private fun evaluateChildren(
+    ingredient: JsonObject,
+    dump: JsonObject,
+    item: String,
+    path: String,
+    role: String,
+): MatchEvaluation {
     val compound = ingredient.get("type").stringValue() == "neoforge:compound"
     val field = if (compound && !ingredient.has("children")) "ingredients" else "children"
     val children = ingredient.get(field)
     return if (children?.isJsonArray != true || children.asJsonArray.isEmpty) {
         unknown("invalid_shape", "$path.$field")
     } else {
-        val evaluated = children.asJsonArray.mapIndexed { index, child -> evaluateIngredient(child, dump, item, "$path.$field[$index]", role) }
+        val evaluated =
+            children.asJsonArray.mapIndexed {
+                index,
+                child,
+                ->
+                evaluateIngredient(child, dump, item, "$path.$field[$index]", role)
+            }
         if (compound) anyMatch(evaluated) else allMatch(evaluated)
     }
 }
