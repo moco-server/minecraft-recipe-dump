@@ -143,3 +143,11 @@ Minecraft／MODの版情報による検索gateを除去。版欠落／不一致�
 GameTest必須3件、結果検査script、Node 29件すべて成功。保存済み4,749レシピの実snapshotを配布CLIで処理し、既存MOD／装置／材料の独立23照合は一致。さらに全件出力・入力、装置＋出力、装置のみ、レシピnamespace、アイテムnamespace、stationsの7検索について、元の版情報・minecraft／mods削除・将来版を模した値の3構成で計21照合し、終了コードと結果JSON全体が一致した。元snapshotは別ファイルへコピーし、書き換えていない。他版のゲームやMODを新規起動した検証ではなく、JSON検索の版非依存を検証した。
 
 ローカルread-onlyレビューでCritical／Important／Minorの具体的指摘なし。証拠は隔離worktreeの.local/json-interface-{baseline,red,core-red,green,check,game,game-result,node,real,versions}.log。
+
+## 2026-10-03 配布物の利用ガイド分離
+
+文書のみ変更。ルートREADMEを利用ガイドへの入口と開発手順に整理し、収集MODの導入・実行・成功確認を `docs/mod.md`、配布CLIの展開・起動・検索・終了コードを `docs/cli.md` に分離した。配布予定と現状を明記し、ガイド同梱・Release添付は次フェーズとして残した。
+
+Java 21.0.12.1で `./gradlew check :neoforge:build :neoforge:verifyModJar :cli:distZip` 成功（既存テスト・成果物はUP-TO-DATE）。`./gradlew :neoforge:runGameTestServer` は必須3件成功し、`node scripts/check-gametest-result.mjs` も成功。`node --test scripts/test/*.test.mjs` は29件成功。3文書のローカルリンク・アンカー18件とコードブロックの対応を確認し、`git diff --check` 成功。
+
+既存CLI ZIP内の `bin/recipe-dump`、`bin/recipe-dump.bat`、依存JARを確認した。今回、配布アーカイブの新規展開によるCLI実行、Windows／macOSでの実行、通常MOD JARでの専用サーバー再検証、外部配布先への公開は実施していない。
