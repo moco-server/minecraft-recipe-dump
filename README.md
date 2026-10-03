@@ -48,9 +48,9 @@ Java 21を `JAVA_HOME` に設定します。Windowsは `gradlew.bat` と `recipe
 - `items`: 全登録アイテムID一覧。任意の `--tag` と `--namespace` をANDで指定できます。タグ検索は旧ダンプでも利用でき、全件一覧は新しい収集MODで再収集した `items` が必要です。
 
 検索値は完全一致で、namespaceの省略補完や部分一致は行いません。`--namespace` は検索対象のレシピIDまたはアイテムIDのコロン前の文字列に適用し、実際の提供元MOD／JARや材料・出力の所属は判定しません。
-装置で調べる場合は、現段階では `--type minecraft:smelting` のようにRecipeTypeを指定します。装置名・材料・出力アイテムによる検索は後続の対応です。
+装置で調べる場合は、現段階では `--type minecraft:smelting` のようにRecipeTypeを指定します。装置アイテムによる検索は後続の対応です。材料・出力は `--uses minecraft:iron_ingot`／`--produces minecraft:iron_ingot` を任意のAND条件として指定します。
 
-`recipes` のJSON結果は `recipes` 配列と `count`、`items` は `items` 配列・`count` と、指定時のみ `tag`・`namespace` を持ちます。ID順で出力し、タグ内の重複アイテムは除去します。未知のID・type・namespace・タグによる0件検索も終了コード0です。
+`recipes` のJSON結果は `recipes` 配列と `count`、`items` は `items` 配列・`count` と、指定時のみ `tag`・`namespace` を持ちます。ID順で出力し、タグ内の重複アイテムは除去します。未知のID・type・namespace・タグによる0件検索も終了コード0です。材料検索はMinecraft 1.21.1の対応バニラserializerのみ解析し、未知形式を含む部分検索はJSONをstdoutへ返して終了コード2になります。analysis／diagnostics／evidenceで未判定件数と根拠を確認できます。
 オプションは `--name value` 形式のみ。同じオプションの重複、未知のオプション、値不足・空値、余分な位置引数は拒否します。診断はstderrへ出します。
 
 不完全なダンプ、未対応のschema、重複ID、読み込み失敗、使用法の誤りではCLIが非ゼロ終了します。競合やゲーム内の成立可否を自動判定するコマンドはありません。
@@ -83,3 +83,5 @@ node --test scripts/test/*.test.mjs
 LLMは [AGENTS.md](AGENTS.md) と必要なrepo内skillを読みます。[設計](docs/design.md)、[ダンプ形式](docs/dump-format.md)、[対応構成](docs/compatibility.md)、[検証記録](docs/verification.md)に判断と実測を残します。
 
 基盤は [moco-server/minecraft-mod-template](https://github.com/moco-server/minecraft-mod-template) 0.1.0です。識別情報は初期化済みで、初期化scriptを再実行する必要はありません。非公開repo、ソースライセンスはMITです。
+
+材料・出力は完全修飾アイテムIDの候補検索です。全材料の充足・必要数量・ゲーム内の作成可否は判定しません。出力が読めれば独自材料があっても出力方向だけの検索は可能です。空タグは不一致、参照タグ欠落は不明です。動的出力・独自材料は診断に残します。

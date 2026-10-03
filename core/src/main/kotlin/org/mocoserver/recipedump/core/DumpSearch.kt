@@ -3,15 +3,23 @@ package org.mocoserver.recipedump.core
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
-/** 検証済みsnapshotを検索する。Minecraftの起動や独自codecの意味の解釈は行わない。 */
+/** 検証済みsnapshotを検索する。Minecraftを起動せず、材料は版とserializerを限定して解釈する。 */
 public object DumpSearch {
-    /** 完全一致の条件をANDで適用し、ID順のレシピ行と件数を返す。結果は入力と可変状態を共有しない。 */
+    /**
+     * 完全一致の条件をANDで適用する。結果は入力と可変状態を共有しない。不正な検索アイテムIDは拒否する。
+     * 既存の名前付き検索APIを維持するため、任意のAND条件を同じ入口で受ける。
+     */
+    @Suppress("LongParameterList")
     public fun recipes(
         dump: JsonObject,
         id: String? = null,
         type: String? = null,
         namespace: String? = null,
+        uses: String? = null,
+        produces: String? = null,
     ): JsonObject {
+        require(uses == null || isItemId(uses)) { "Invalid uses item ID" }
+        require(produces == null || isItemId(produces)) { "Invalid produces item ID" }
         val matches =
             dump
                 .getAsJsonArray("recipes")
@@ -22,6 +30,7 @@ public object DumpSearch {
                         (type == null || recipe.get("type").asString == type) &&
                         (namespace == null || (':' in recipeId && recipeId.substringBefore(':') == namespace))
                 }.sortedBy { it.get("id").asString }
+        if (uses != null || produces != null) return analyzeRecipes(dump, matches, uses, produces)
         val rows = JsonArray()
         matches.forEach { rows.add(it.deepCopy()) }
         return JsonObject().apply {
@@ -29,6 +38,11 @@ public object DumpSearch {
             addProperty("count", rows.size())
         }
     }
+
+    /** 対象版の完全修飾アイテムID構文を判定する。レジストリの存在確認はしない。 */
+    public fun isItemId(value: String): Boolean =
+        org.mocoserver.recipedump.core
+            .isItemId(value)
 
     /** 任意のタグとnamespaceをANDで絞る。全件検索で一覧が欠落する旧ダンプは再収集が必要。 */
     public fun items(

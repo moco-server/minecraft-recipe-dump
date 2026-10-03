@@ -10,30 +10,76 @@ internal fun evaluateIngredient(
     path: String,
     role: String = "ingredient",
 ): MatchEvaluation {
-    if (value?.isJsonArray == true) {
-        return anyMatch(value.asJsonArray.mapIndexed { index, child -> evaluateIngredient(child, dump, item, "$path[$index]", role) })
+    val ingredient = value.objectValue()
+    return when {
+        value?.isJsonArray == true ->
+            anyMatch(
+                value.asJsonArray.mapIndexed { index, child ->
+                    evaluateIngredient(child, dump, item, "$path[$index]", role)
+                },
+            )
+        ingredient == null -> unknown("invalid_shape", path)
+        ingredient.has("type") -> unknown("unsupported_ingredient", "$path.type")
+        else -> evaluateSimpleIngredient(ingredient, dump, item, path, role)
     }
-    val ingredient = value.objectValue() ?: return unknown("invalid_shape", path)
-    if (ingredient.has("type")) return unknown("unsupported_ingredient", "$path.type")
-    if (ingredient.has("item") == ingredient.has("tag")) return unknown("invalid_shape", path)
+}
+
+private fun evaluateSimpleIngredient(
+    ingredient: JsonObject,
+    dump: JsonObject,
+    item: String,
+    path: String,
+    role: String,
+): MatchEvaluation {
     val field = if (ingredient.has("item")) "item" else "tag"
     val id = ingredient.get(field).stringValue()
-    if (id == null || !isItemId(id)) return unknown("invalid_shape", "$path.$field")
-    val matches = if (field == "item") {
-        item == id
-    } else {
-        val tags = dump.get("itemTags").objectValue()
-        val candidates = tags?.get(id) ?: return unknown("missing_tag", "$path.tag")
-        if (!candidates.isJsonArray || candidates.asJsonArray.any { it.stringValue()?.let(::isItemId) != true }) {
-            return unknown("invalid_shape", "$path.tag")
-        }
-        candidates.asJsonArray.any { it.asString == item }
+    return when {
+        ingredient.has("item") == ingredient.has("tag") -> unknown("invalid_shape", path)
+        id == null || !isItemId(id) -> unknown("invalid_shape", "$path.$field")
+        field == "tag" -> evaluateTag(dump, id, item, path, role)
+        else -> ingredientMatch(id == item, item, path, role)
     }
-    if (!matches) return MatchEvaluation(MatchState.NO_MATCH)
-    return MatchEvaluation(MatchState.MATCH, listOf(JsonObject().apply {
-        addProperty("item", item)
-        addProperty("path", path)
-        addProperty("role", role)
-        if (field == "tag") addProperty("tag", id)
-    }))
 }
+
+private fun evaluateTag(
+    dump: JsonObject,
+    tag: String,
+    item: String,
+    path: String,
+    role: String,
+): MatchEvaluation {
+    val candidates = dump.get("itemTags").objectValue()?.get(tag)
+    return when {
+        candidates == null -> unknown("missing_tag", "$path.tag")
+        !candidates.isJsonArray -> unknown("invalid_shape", "$path.tag")
+        candidates.asJsonArray.any {
+            it.stringValue()?.let(
+                ::isItemId,
+            ) != true
+        } -> unknown("invalid_shape", "$path.tag")
+        else -> ingredientMatch(candidates.asJsonArray.any { it.asString == item }, item, path, role, tag)
+    }
+}
+
+private fun ingredientMatch(
+    matches: Boolean,
+    item: String,
+    path: String,
+    role: String,
+    tag: String? = null,
+): MatchEvaluation =
+    if (!matches) {
+        MatchEvaluation(MatchState.NO_MATCH)
+    } else {
+        MatchEvaluation(
+            MatchState.MATCH,
+            listOf(
+                JsonObject().apply {
+                    addProperty("item", item)
+                    addProperty("path", path)
+                    addProperty("role", role)
+                    if (tag != null) addProperty("tag", tag)
+                },
+            ),
+        )
+    }

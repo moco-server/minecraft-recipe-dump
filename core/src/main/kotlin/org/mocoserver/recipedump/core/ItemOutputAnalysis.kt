@@ -14,16 +14,29 @@ internal fun positiveCount(value: JsonElement?): Int? {
     }
 }
 
-internal fun evaluateItemOutput(value: JsonElement?, item: String, path: String): MatchEvaluation {
-    val output = value.objectValue() ?: return unknown("invalid_shape", path)
-    val id = output.get("id").stringValue()
-    if (id == null || !isItemId(id)) return unknown("invalid_shape", "$path.id")
-    val count = if (output.has("count")) positiveCount(output.get("count")) else 1
-    if (count == null) return unknown("invalid_shape", "$path.count")
-    if (id != item) return MatchEvaluation(MatchState.NO_MATCH)
-    return MatchEvaluation(MatchState.MATCH, listOf(JsonObject().apply {
-        addProperty("item", item)
-        addProperty("path", path)
-        addProperty("count", count)
-    }))
+internal fun evaluateItemOutput(
+    value: JsonElement?,
+    item: String,
+    path: String,
+): MatchEvaluation {
+    val output = value.objectValue()
+    val id = output?.get("id").stringValue()
+    val count = if (output?.has("count") == true) positiveCount(output.get("count")) else 1
+    return when {
+        output == null -> unknown("invalid_shape", path)
+        id == null || !isItemId(id) -> unknown("invalid_shape", "$path.id")
+        count == null -> unknown("invalid_shape", "$path.count")
+        id != item -> MatchEvaluation(MatchState.NO_MATCH)
+        else ->
+            MatchEvaluation(
+                MatchState.MATCH,
+                listOf(
+                    JsonObject().apply {
+                        addProperty("item", item)
+                        addProperty("path", path)
+                        addProperty("count", count)
+                    },
+                ),
+            )
+    }
 }

@@ -24,7 +24,7 @@ JSON object。初期Java実証のschema 1もCLIで読み込める。読み込み
 
 `items --tag` は `itemTags` のキーを完全一致で参照し、解決済みIDを重複除去して昇順で `tag`・`items`・`count` を返す。参照対象タグの値が文字列配列でなければ拒否する。無関係なタグの値はこの検索では検証しない。未登録タグは空配列と件数0を返す。
 
-未知の検索値は正常な0件検索として終了コード0。材料・出力の解析、装置アイテムとRecipeTypeの対応は現在の検索契約に含まれない。検索結果もsnapshotの範囲に限り、入力読み込み成功やゲーム内の作成可否を保証しない。
+未知の検索値は正常な0件検索として終了コード0。装置アイテムとRecipeTypeの対応は現在の検索契約に含まれない。検索結果もsnapshotの範囲に限り、入力読み込み成功やゲーム内の作成可否を保証しない。
 
 ## 差分と構成情報
 
@@ -37,3 +37,13 @@ MODのversionと選択pack順序を記録するが、JAR・設定・スクリプ
 `items` はschema 1の任意追加フィールドで、全登録アイテムの完全修飾IDを収集側が重複なし・昇順で保存する。minecraft:airも含む。decodeは配列順を問わず空配列を受理するが、null・誤型・重複・不正IDを拒否する。IDは`[a-z0-9_.-]+:[a-z0-9/._-]+`。旧ダンプの欠落は許容する。
 
 `items` コマンドはtagなしなら登録一覧を要求し、欠落時は再収集を案内して終了コード1。tagありなら従来のタグ集合を使用し、任意namespaceをIDのコロン前への完全一致でAND適用する。結果は昇順のitemsとcount、指定時のみtag／namespaceを持つ。アイテム一覧の差分やsummary項目は追加しない。保存は独自JSONの明示nullを含めてatomic置換する。
+
+## 材料・出力検索
+
+`recipes --uses <item-id> --produces <item-id>`は任意のAND条件。ID構文はitemsと同じ完全修飾形式で、CLIはI/O前に検証する。metadata条件を先に適用し、指定方向だけ解析する。Minecraft 1.21.1のcrafting_shaped／shapeless、smelting／blasting／smoking／campfire_cooking、stonecutting、smithing_transformに対応する。smithing_trimは入力のみ対応。特殊crafting・未知版・未知serializerは未対応。item／tag／配列ORを扱い、独自材料は未解決。patternの実使用keyだけを参照し、outputはidと正整数count（省略1）を読む。componentsは生JSONへ保持する。
+
+ORは既知一致優先、uses／producesのANDは既知不一致優先。不明を空集合と扱わない。候補検索であり、全入力充足・容器返却・副作用・数量条件・作成可否は評価しない。
+
+材料指定時だけ`analysis`（candidateCount／analyzedCount／unsupportedCount／unresolvedCount／exhaustive）、`diagnostics`、`evidence`を追加する。candidate=analyzed+unsupported+unresolved、一致と不一致を判断した行はanalyzed、両不明分類を持つ行はunresolvedへ一度だけ数える。不明行のdiagnosticsはid／serializer／code／任意pathをID・path・code順に返す。一致行だけのevidenceはusesにitem／path／role／任意tag、producesにitem／path／countを持つ。recipesは明示nullを含む元の行全体。
+
+終了コード0は評価完了（0件も含む）、1は引数・I/O・入力検証エラー、2は部分検索。exhaustiveは不明行0でtrue、metadata候補0もtrue。部分検索でもstdoutはJSON、診断はその中へ返しstderrは通常エラー専用。dump.completeとは独立する。metadataだけの既存検索では新キーと部分終了コードを付けない。

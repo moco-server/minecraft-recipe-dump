@@ -30,20 +30,31 @@ internal fun runCli(
         // レシピ行全体の保持契約では、独自codecや追加フィールドの明示的なnullも失わせない。
         if (command == "recipes") gsonBuilder.serializeNulls()
         val gson = gsonBuilder.create()
-        when (command) {
-            "recipes" -> {
-                val filters = requireNotNull(search)
-                out.println(gson.toJson(DumpSearch.recipes(dump, filters.id, filters.type, filters.namespace)))
+        val status =
+            when (command) {
+                "recipes" -> {
+                    val filters = requireNotNull(search)
+                    val result =
+                        DumpSearch.recipes(
+                            dump,
+                            filters.id,
+                            filters.type,
+                            filters.namespace,
+                            filters.uses,
+                            filters.produces,
+                        )
+                    out.println(gson.toJson(result))
+                    if (result.getAsJsonObject("analysis")?.get("exhaustive")?.asBoolean == false) 2 else 0
+                }
+                "items" -> out.println(gson.toJson(DumpSearch.items(dump, search?.tag, search?.namespace)))
+                "csv" -> out.print(DumpReports.csv(dump))
+                "diff" ->
+                    out.println(
+                        gson.toJson(DumpReports.diff(dump, DumpJson.decode(Files.readString(Path.of(args[2]))))),
+                    )
+                else -> out.println(gson.toJson(DumpReports.summary(dump)))
             }
-            "items" -> out.println(gson.toJson(DumpSearch.items(dump, search?.tag, search?.namespace)))
-            "csv" -> out.print(DumpReports.csv(dump))
-            "diff" ->
-                out.println(
-                    gson.toJson(DumpReports.diff(dump, DumpJson.decode(Files.readString(Path.of(args[2]))))),
-                )
-            else -> out.println(gson.toJson(DumpReports.summary(dump)))
-        }
-        0
+        if (status is Int) status else 0
     } catch (exception: IllegalArgumentException) {
         err.println(exception.message)
         1

@@ -7,8 +7,18 @@ import org.junit.jupiter.api.Test
 
 class VanillaRecipeAnalysisTest {
     private val dump = JsonParser.parseString("""{"minecraft":"1.21.1","itemTags":{}}""").asJsonObject
-    private fun fixture(name: String): JsonObject = JsonParser.parseString(requireNotNull(javaClass.getResource("/recipes/vanilla/$name.json")).readText()).asJsonObject
-    private fun query(row: JsonObject, uses: String? = null, produces: String? = null) = evaluateVanillaRecipe(dump, row, uses, produces)
+
+    private fun fixture(name: String): JsonObject =
+        JsonParser
+            .parseString(
+                requireNotNull(javaClass.getResource("/recipes/vanilla/$name.json")).readText(),
+            ).asJsonObject
+
+    private fun query(
+        row: JsonObject,
+        uses: String? = null,
+        produces: String? = null,
+    ) = evaluateVanillaRecipe(dump, row, uses, produces)
 
     @Test
     fun `real vanilla codecs support every declared direction`() {
@@ -27,11 +37,21 @@ class VanillaRecipeAnalysisTest {
             assertEquals(MatchState.MATCH, query(row, produces = output).state, serializer)
             assertEquals(MatchState.MATCH, query(row, input, output).state, serializer)
             assertEquals(MatchState.NO_MATCH, query(row, produces = "test:absent").state, serializer)
-            assertEquals(output, query(row, produces = output).evidence.single().get("item").asString)
+            assertEquals(
+                output,
+                query(row, produces = output)
+                    .evidence
+                    .single()
+                    .get("item")
+                    .asString,
+            )
         }
         val trim = fixture("smithing_trim")
         assertEquals(MatchState.MATCH, query(trim, uses = "minecraft:bolt_armor_trim_smithing_template").state)
-        assertEquals("unsupported_direction", query(trim, produces = "minecraft:diamond_chestplate").issues.single().code)
+        assertEquals(
+            "unsupported_direction",
+            query(trim, produces = "minecraft:diamond_chestplate").issues.single().code,
+        )
     }
 
     @Test
@@ -46,19 +66,39 @@ class VanillaRecipeAnalysisTest {
         val shapeless = fixture("crafting_shapeless")
         shapeless.getAsJsonObject("data").add("ingredients", JsonParser.parseString("[]"))
         assertEquals("invalid_shape", query(shapeless, uses = "minecraft:acacia_planks").issues.single().code)
-        assertEquals(MatchState.NO_MATCH, query(shapeless, uses = "minecraft:acacia_planks", produces = "test:absent").state)
+        assertEquals(
+            MatchState.NO_MATCH,
+            query(shapeless, uses = "minecraft:acacia_planks", produces = "test:absent").state,
+        )
     }
 
     @Test
     fun `invalid outputs are unknown and default count is one`() {
-        for (shape in listOf("null", "\"minecraft:acacia_boat\"", "{}", "{\"id\":null}", "{\"id\":\"boat\"}", "{\"id\":\"minecraft:acacia_boat\",\"count\":0}", "{\"id\":\"minecraft:acacia_boat\",\"count\":-1}", "{\"id\":\"minecraft:acacia_boat\",\"count\":1.5}", "{\"id\":\"minecraft:acacia_boat\",\"count\":\"1\"}")) {
+        for (shape in listOf(
+            "null",
+            "\"minecraft:acacia_boat\"",
+            "{}",
+            "{\"id\":null}",
+            "{\"id\":\"boat\"}",
+            "{\"id\":\"minecraft:acacia_boat\",\"count\":0}",
+            "{\"id\":\"minecraft:acacia_boat\",\"count\":-1}",
+            "{\"id\":\"minecraft:acacia_boat\",\"count\":1.5}",
+            "{\"id\":\"minecraft:acacia_boat\",\"count\":\"1\"}",
+        )) {
             val row = fixture("crafting_shaped")
             row.getAsJsonObject("data").add("result", JsonParser.parseString(shape))
             assertEquals("invalid_shape", query(row, produces = "minecraft:acacia_boat").issues.single().code, shape)
         }
         val row = fixture("crafting_shaped")
         row.getAsJsonObject("data").getAsJsonObject("result").remove("count")
-        assertEquals(1, query(row, produces = "minecraft:acacia_boat").evidence.single().get("count").asInt)
+        assertEquals(
+            1,
+            query(row, produces = "minecraft:acacia_boat")
+                .evidence
+                .single()
+                .get("count")
+                .asInt,
+        )
         row.getAsJsonObject("data").remove("result")
         assertEquals(MatchState.UNKNOWN, query(row, produces = "minecraft:acacia_boat").state)
     }
@@ -69,7 +109,10 @@ class VanillaRecipeAnalysisTest {
         for (version in listOf("1.20.1", null)) {
             val other = dump.deepCopy()
             if (version == null) other.remove("minecraft") else other.addProperty("minecraft", version)
-            assertEquals("unsupported_version", evaluateVanillaRecipe(other, row, "minecraft:potato", null).issues.single().code)
+            assertEquals(
+                "unsupported_version",
+                evaluateVanillaRecipe(other, row, "minecraft:potato", null).issues.single().code,
+            )
         }
         row.addProperty("serializer", "minecraft:crafting_special_repairitem")
         assertEquals("unsupported_serializer", query(row, produces = "minecraft:diamond").issues.single().code)

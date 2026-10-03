@@ -89,3 +89,11 @@ Java 21、Minecraft 1.21.1、NeoForge 21.1.252で`check :neoforge:build :neoforg
 独自datapackの条件付きincluded収集・excluded除外、diamond_blockの出力をdiamond×2へ上書き、実行時fixtureによるruntime_added追加・gold_block除外を再確認した。modified／dynamicは各4,750レシピ、アイテム数は各2,598件。配布CLIで一覧、namespace、タグ＋namespace、新旧タグ検索（planks 11件）、旧ダンプ一覧拒否を独立集計と照合した。並行サーバー検証中にJVMのスレッド資源警告がstdoutへ混ざったため、CLI照合はJAVA_OPTS=-XX:ActiveProcessorCount=2で実施し、JSONのみのstdoutを確認した。
 
 証拠は実装worktreeの.local/inventory-*.logと.local/integration/。未検証: registry列挙そのものの障害注入、他Minecraft／MOD版、対話的client。列挙失敗を握りつぶさない既存外側FAILED経路はコードで確認した。
+
+## 2026-10-03 後続CLI第3段階
+
+同じJava／Minecraft／NeoForge版で必須check／build／verifyModJar／distZipとinstallDistが成功。core 26件、CLI 11件のテストが成功し、実codec由来9バニラserializer fixture、三値のOR／AND、欠落タグ・誤型・不正出力count、方向独立・partition・根拠・null保持、終了コード0／1／2を検査した。
+
+配布CLIで通常JARの4,749レシピsnapshotを独立Python集計と照合した。全件diamond出力検索は解析済み2,680、未対応2,069、未解決0で終了コード2。smelting 118候補のiron_ingot出力およびraw_iron入力とのANDは全118件を評価でき終了コード0。diamond_blockの入力diamond／出力diamond_blockのAND、metadata絞り込み後0候補のexhaustiveも一致した。GameTest必須3件とNode 29件も成功。
+
+証拠は.local/material-*.log、.local/integration/vanilla-cli-result.log。この段階ではMOD固有serializerを未対応として数える。バニラ名のserializerでも独自材料や未知タグは部分検索になる。収集と停止は第2段階から変更していない。
