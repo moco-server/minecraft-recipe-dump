@@ -22,15 +22,15 @@
 
 JVM終了コードは保存成功を保証しない。出力runIdをログに記録するが、実行ID付き状態ファイルとCLIの自動起動管理は未実装。利用者は新規出力パスと今回のログ・ダンプを照合する。
 
-## 今回の範囲と今後
+## 現在の範囲と今後
 
 一覧・CSV・レシピ差分に加え、レシピID／RecipeType／レシピIDのnamespaceによるAND検索と、解決済みアイテムタグの検索を提供する。検索用のJSON生成はcore、引数・I/O・表示はcliが担当する。IDのnamespaceは提供元JARの判定には使わない。同じsnapshotの登録キーから全アイテム一覧も収集し、タグまたは一覧へアイテムnamespace条件を適用する。旧ダンプはタグ検索を維持し、一覧検索は再収集を要求する。
 
-バニラ材料・出力検索はcoreのserializer別のJSON形式adapterで必要方向だけ三値評価する。metadata条件後の候補を解析済み／未対応／未解決へ分割し、不明行は診断と部分終了コード2で明示する。items一覧は解析の前提にしない。MOD固有JSONは明示serializer別の小さいadapterをcoreに置く。装置IDとRecipeTypeの別名表を解析から独立させ、装置だけの検索ではcodecを読まない。Minecraft／MODの版メタデータは検索可否の条件にせず、検証済み構成の情報と区別する。stationsはダンプ内のRecipeTypeに対応する既知別名を列挙し、既知別名の0件検索も正常とする。対応範囲は[段階的検索の設計](superpowers/specs/2026-10-03-cli-search-design.md)とREADMEへ記載する。MOD API依存や装置能力の推測は追加しない。
+バニラ材料・出力検索はcoreのserializer別のJSON形式adapterで必要方向だけ三値評価する。metadata条件後の候補を解析済み／未対応／未解決へ分割し、不明行は診断と部分終了コード2で明示する。items一覧は解析の前提にしない。MOD固有JSONは明示serializer別の小さいadapterをcoreに置く。装置IDとRecipeTypeの別名表を解析から独立させ、装置だけの検索ではcodecを読まない。Minecraft／MODの版メタデータは検索可否の条件にせず、検証済み構成の情報と区別する。stationsはダンプ内のRecipeTypeに対応する既知別名を列挙し、既知別名の0件検索も正常とする。検索契約は [CLI検索・差分仕様](../reference/cli-search.md)、対応serializerと装置別名は [CLI利用ガイド](../guides/cli.md#材料jsonの解析形式と検証済み構成) に記載する。MOD API依存や装置能力の推測は追加しない。
 完全な競合検出、タグ／構成の差分、RecipeManager外の加工、任意インスタンス自動準備、ワールド生成前の終了、他Loader対応は含まない。後のティックやreloadによる変更もsnapshotに含まれると保証しない。
 
 今後は読み込み診断とrunId付き状態ファイルを先に検討する。競合検査を追加するなら対象RecipeTypeを明示する。新しいJSON形式の対応はserializer別の実測で判断する。
 
 ## 根拠
 
-[NeoForge 1.21.1 Recipes](https://docs.neoforged.net/docs/1.21.1/resources/server/recipes/)、[Data Load Conditions](https://docs.neoforged.net/docs/1.21.1/resources/server/conditions/)と、21.1.252開発環境が生成する対象版ソースを確認した。実証結果と移植後の実測はverification.mdへ記録する。
+[NeoForge 1.21.1 Recipes](https://docs.neoforged.net/docs/1.21.1/resources/server/recipes/)、[Data Load Conditions](https://docs.neoforged.net/docs/1.21.1/resources/server/conditions/)と、21.1.252開発環境が生成する対象版ソースを確認した。実証結果と移植後の実測は [検証記録](../verification/README.md) から参照する。

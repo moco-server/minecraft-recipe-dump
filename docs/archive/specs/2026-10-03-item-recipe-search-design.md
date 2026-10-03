@@ -1,9 +1,11 @@
 # 第3段階: バニラ形式の材料・出力検索
 
-> 2026-10-03追記: ユーザー指示により、本文の固定版gateと版条件による装置一覧は撤回した。現在の検索はserializerとJSON形式で判定し、版情報は検索可否に使わない。stationsはダンプ内のRecipeTypeに対応する既知別名を列挙する。現在の契約は[ダンプ形式](../../dump-format.md)と[実装判断](../../implementation-decisions.md)を参照する。
+> 履歴資料: この作業は完了済み。本文は当時の設計・計画であり、現行仕様や実行指示ではない。現在の契約は [ダンプ形式](../../reference/dump-format.md) と [CLI検索・差分仕様](../../reference/cli-search.md)、実測は [検証記録](../../verification/README.md) を参照する。
+
+> 2026-10-03追記: ユーザー指示により、本文の固定版gateと版条件による装置一覧は撤回した。現在の検索はserializerとJSON形式で判定し、版情報は検索可否に使わない。stationsはダンプ内のRecipeTypeに対応する既知別名を列挙する。現在の契約は[ダンプ形式](../../reference/dump-format.md)と[実装判断](../../design/decisions.md)を参照する。
 
 
-状態: 承認済み。実装・受け入れ検証済み（docs/verification.md）。
+状態: 承認済み。実装・受け入れ検証済み（docs/verification/records/2026-10-03-development.md）。
 
 ## 目的と範囲
 

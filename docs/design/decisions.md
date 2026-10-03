@@ -1,4 +1,8 @@
-# 実装判断
+# 設計判断
+
+現在の採用理由と方針変更を記す。実行結果は [検証記録](../verification/README.md)、作業手順は [履歴資料](../archive/README.md) へ分ける。
+
+## Kotlin移植と収集方式（2026-10-03）
 
 2026-10-03: Java MOD＋Node CLIで成立を確認した収集をKotlinへ移植した。既存基盤のcore境界・ktlint・detekt・JAR検査・GameTestを維持し、CLIを同じcoreへ接続する。Gson 2.10.1は対象Minecraftの実行環境に合わせる。
 
@@ -6,7 +10,7 @@
 
 1.21.1のhadErrorsLoadingは入力レシピの解析失敗を確実に表さないため、loadDiagnostics=not-trackedとして扱う。Java実証のrecipeManagerHasErrorsフィールドは移植版の成功判定に使用しない。completeはsnapshotの書き出し完了に限定する。
 
-## 後続CLI第2〜4段階の実装・レビュー判断（2026-10-03）
+## CLIの責務と候補検索の範囲（2026-10-03）
 
 - inventoryのテストは既存2クラスへ分散せず独立ItemInventoryTestへ置いた。共通fixtureで新契約をまとめ、振る舞いの変更はない。
 - 結果JSONの集計は内部RecipeSearchResultへ分けた。DumpSearchは選択へ集中し、代償は内部ファイル1個の追加。
@@ -16,7 +20,7 @@
 - 表外serializerは診断に残し、RecipeManager外の加工は収集対象外と維持した。対応外の捕捉済み行は部分検索に残るが、未収集加工を検索することはできない。
 - Mekanismの同じ10.7.19ヘッダーを持つ別buildの互換性は宣言しない。実測は10.7.19.85で、ヘッダー一致だけでは他build互換を判断できない。
 
-全体レビューのImportant 1件（使用key欠落の診断が別key一致で消える）は3回帰テストのRED→GREENで修正。Critical／Minor指摘なし。
+使用key欠落の検証を先行し、別keyの一致で不正形の診断を消さない。ORの既知一致優先は、形が有効な材料の評価に適用する。修正の実測は [第4段階の全体レビュー](../verification/records/2026-10-03-development.md#全体レビューと修正) を参照する。
 
 ## CLIをJSONのインターフェースとして扱う変更（2026-10-03）
 

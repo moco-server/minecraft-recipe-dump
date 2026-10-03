@@ -5,7 +5,7 @@ description: 独立MODの変更を検収する、ビルド・起動・実動作�
 
 # mod-verify
 
-入力は変更diffと受け入れ条件、実行可能な構成。出力は[verification](../../../docs/verification.md)へ記す版・手順・観測結果と未実施項目。
+入力は変更diffと受け入れ条件、実行可能な構成。出力は [検証記録の案内](../../../docs/verification/README.md) に従い、`docs/verification/records/YYYY-MM-DD-<topic>.md` へ記す版・手順・観測結果と未実施項目。検証範囲が変わったら現状の要約も更新する。
 
 [開発手順](../mod-implement/references/development.md)のroot checkを基本に、変更に応じてdatagen差分、通常JAR内容検査、GameTest、専用サーバー起動・接続、実動作を確認する。テストを実行した結果を読み、未実行の成功を推測しない。GameTestが0件で終了した場合を検証済みとしない。
 

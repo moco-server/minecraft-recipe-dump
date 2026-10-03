@@ -2,7 +2,7 @@
 
 JAVA_HOMEはJava 21のJDKへ指定する。Gradle Wrapper 8.12.1を使い、ホストの別版JavaやGradleを無条件に流用しない。必要ならGRADLE_USER_HOMEをrepo内.local/gradleへ指定する。
 
-このrepoは初期化済み。初期化scriptを再実行しない。ID／package／group／作者／repo URLを明示し、生成namespaceとmetadataを揃える。docs/design.mdはそのMODの現在の設計へ更新する。coreへゲーム型を入れず、必要な外部操作だけインターフェース化する。
+このrepoは初期化済み。初期化scriptを再実行しない。ID／package／group／作者／repo URLを明示し、生成namespaceとmetadataを揃える。docs/design/architecture.mdはそのMODの現在の設計へ更新する。coreへゲーム型を入れず、必要な外部操作だけインターフェース化する。
 
 | 目的 | コマンド |
 | --- | --- |

@@ -1,4 +1,6 @@
-# 検証記録
+# 開発・検証履歴（2026-10-03）
+
+各節は当時の実測を保持する。途中段階の未実装・未検証や文書パスは、その時点の情報である。現在の検証範囲は [検証の現状](../README.md) を参照する。
 
 ## 2026-10-03: CLI検索の第1段階
 
@@ -44,7 +46,7 @@ CodeRabbitの外部サービスへの差分送信は自動承認レビューで�
 
 ## 2026-10-03: 実証コードのKotlin移植
 
-構成: Minecraft 1.21.1、NeoForge 21.1.252、Eclipse Adoptium Java 21.0.12.1、Kotlin 2.0.21、KotlinForForge 5.5.0。Linux（WSL2）。固定ビルドツールはcompatibility.mdとcatalogを参照。
+構成: Minecraft 1.21.1、NeoForge 21.1.252、Eclipse Adoptium Java 21.0.12.1、Kotlin 2.0.21、KotlinForForge 5.5.0。Linux（WSL2）。固定ビルドツールは [対応構成](../../reference/compatibility.md) とcatalogを参照。
 
 実施:
 

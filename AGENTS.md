@@ -6,7 +6,7 @@
 
 Minecraft／Loader本来の読み込みで有効になったレシピを収集する専用サーバー側MODと、ダンプをゲーム外で調べるCLIを開発する。modpackや通常のコンテンツ追加MODではない。アイテム・装置・ゲーム進行を追加しない。
 
-初期対応はMinecraft 1.21.1、NeoForge 21.1.252、Java 21。Kotlin／KotlinForForge等の固定版はGradle properties／catalog、対応根拠は[compatibility](docs/compatibility.md)。[design](docs/design.md)が現在の設計、[dump-format](docs/dump-format.md)が出力契約、[verification](docs/verification.md)が実測と未検証範囲。
+初期対応はMinecraft 1.21.1、NeoForge 21.1.252、Java 21。Kotlin／KotlinForForge等の固定版はGradle properties／catalog、対応根拠は[compatibility](docs/reference/compatibility.md)。[design](docs/design/architecture.md)が現在の設計、[dump-format](docs/reference/dump-format.md)が保存形式、[cli-search](docs/reference/cli-search.md)がCLI検索・差分の契約、[verification](docs/verification/README.md)が実測と未検証範囲。
 
 ## 実装境界と契約
 
@@ -19,6 +19,8 @@ Minecraft／Loader本来の読み込みで有効になったレシピを収集�
 - 出力失敗を成功として表示しない。既存出力は完成後に置き換える。JVM終了コード0をダンプ成功の唯一の根拠にしない。
 - 収集タイミング・schema・CLI仕様の変更は文書とテストも更新する。形式バージョンを維持できない変更は明示して扱う。
 
+文書の分類・更新先は [文書案内](docs/README.md) に従う。進行中の設計案・計画は `docs/work/`、完了した資料は `docs/archive/`。現行仕様はreference／designへ反映し、実測は `docs/verification/records/` へ記録する。
+
 ## 作業・検証
 
 - [Kotlin規約](.agents/skills/mod-kotlin/references/coding-conventions.md)に従い、val、明示的なcore API、最小の可視性、日本語の理由・契約コメントを使う。
@@ -28,7 +30,7 @@ Minecraft／Loader本来の読み込みで有効になったレシピを収集�
 - 現在はコンテンツとdatagenを持たない。テンプレートのsample_tokenや数量サンプルを復活させない。JARにはCLI・GameTest・外部MOD・開発資料を混入させない。
 - `.local/`とbuildへ環境・ログ・生成物を置く。保存済みワールドを上書きせず新規またはコピーを使う。JAR、ワールド、ログ、認証情報をGitへ追加しない。
 - 基本検証はヘッドレスで実施する。対話的client検証が必要になった場合だけ、対象版のEMI／JEIを開発環境へ用意する。本体の依存にはしない。
-- 外部skillsは[固定manifest](scripts/skills.tsv)と[導入手順](docs/external-skills.md)に従いrepoの `.agents/skills/` だけへ導入する。通常ビルドはskills／Nodeへ依存させない。
+- 外部skillsは[固定manifest](scripts/skills.tsv)と[導入手順](docs/guides/external-skills.md)に従いrepoの `.agents/skills/` だけへ導入する。通常ビルドはskills／Nodeへ依存させない。
 
 ## repo内skills
 

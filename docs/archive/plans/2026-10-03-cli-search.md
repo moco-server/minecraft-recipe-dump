@@ -1,5 +1,7 @@
 # CLI検索 第1段階 Implementation Plan
 
+> 履歴資料: この作業は完了済み。本文は当時の設計・計画であり、現行仕様や実行指示ではない。現在の契約は [ダンプ形式](../../reference/dump-format.md) と [CLI検索・差分仕様](../../reference/cli-search.md)、実測は [検証記録](../../verification/README.md) を参照する。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** schema 1のダンプから、レシピID・RecipeType・レシピnamespace・アイテムタグを検索できるCLIを提供する。
@@ -36,7 +38,7 @@
 - 変更cli/src/main/kotlin/org/mocoserver/recipedump/cli/Main.kt: 新コマンドへの振り分け。
 - 新規cli/src/main/kotlin/org/mocoserver/recipedump/cli/SearchArguments.kt: 検索引数の解析。
 - 変更cli/src/test/kotlin/org/mocoserver/recipedump/cli/CliTest.kt: 新コマンドと既存機能の受け入れ。
-- 変更README.md、docs/design.md、docs/dump-format.md、docs/verification.md: 使用法・契約・実測。
+- 変更README.md、docs/design/architecture.md、docs/reference/dump-format.md、docs/verification/records/2026-10-03-development.md: 使用法・契約・実測。
 
 ### Task 1: coreの検索API
 

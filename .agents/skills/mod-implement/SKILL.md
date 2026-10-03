@@ -13,4 +13,4 @@ description: 独立Kotlin MODの登録、加工、保存、通信、datagen、lo
 
 加工はサーバー側で入力種類・個数・アクセス権・出力容量を全て確認してから確定する。素材不足／出力満杯／失敗では素材や保存状態を変更しない。事前確認と確定の間に状態が変わる場合は再検証し、simulateだけで原子性が得られると断定しない。失敗条件と成功条件を実際のテストで確認する。
 
-収集ツールは現在datagenを持たない。将来必要な場合は入力を修正して再生成し、別Gradle呼出しでcheck／build／verifyModJarを行う。登録・recipe・ゲーム操作はGameTestで、client／専用サーバーの違いは起動・接続で確認する。未実施は[検証記録](../../../docs/verification.md)へ明記する。
+収集ツールは現在datagenを持たない。将来必要な場合は入力を修正して再生成し、別Gradle呼出しでcheck／build／verifyModJarを行う。登録・recipe・ゲーム操作はGameTestで、client／専用サーバーの違いは起動・接続で確認する。未実施は[検証記録](../../../docs/verification/README.md)へ明記する。

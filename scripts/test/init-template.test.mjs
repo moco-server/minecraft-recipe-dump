@@ -32,6 +32,8 @@ function snapshot(dir) {
 test('renames source namespaces metadata and documents without touching unknown files', (t) => {
   const dir = sandbox(t);
   writeFileSync(join(dir, 'untouched.txt'), 'mod_template org.mocoserver.modtemplate');
+  mkdirSync(join(dir, 'docs/design'), { recursive: true });
+  writeFileSync(join(dir, 'docs/design/architecture.md'), 'mod_template org.mocoserver.modtemplate');
   const result = run(dir);
   assert.equal(result.status, 0, result.stderr);
   const code = readFileSync(join(dir, 'neoforge/src/main/kotlin/org/mocoserver/testgem/ModTemplate.kt'), 'utf8');
@@ -45,7 +47,7 @@ test('renames source namespaces metadata and documents without touching unknown 
   assert.match(properties, /mod_group_id=org.mocoserver.mods/);
   assert.equal(readFileSync(join(dir, 'untouched.txt'), 'utf8'), 'mod_template org.mocoserver.modtemplate');
   assert.equal(JSON.parse(readFileSync(join(dir, '.template-initialized.json'), 'utf8')).modId, 'test_gem');
-  for (const path of ['docs/verification.md', '.agents/skills/mod-kotlin/references/coding-conventions.md', '.agents/skills/mod-implement/references/development.md']) {
+  for (const path of ['docs/verification.md', 'docs/design/architecture.md', '.agents/skills/mod-kotlin/references/coding-conventions.md', '.agents/skills/mod-implement/references/development.md']) {
     assert.doesNotMatch(readFileSync(join(dir, path), 'utf8'), /mod_template/);
   }
 });

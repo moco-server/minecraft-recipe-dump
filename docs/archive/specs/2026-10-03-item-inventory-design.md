@@ -1,6 +1,8 @@
 # 第2段階: 全登録アイテムの収集と検索
 
-状態: 承認済み。実装・受け入れ検証済み（docs/verification.md）。
+> 履歴資料: この作業は完了済み。本文は当時の設計・計画であり、現行仕様や実行指示ではない。現在の契約は [ダンプ形式](../../reference/dump-format.md) と [CLI検索・差分仕様](../../reference/cli-search.md)、実測は [検証記録](../../verification/README.md) を参照する。
+
+状態: 承認済み。実装・受け入れ検証済み（docs/verification/records/2026-10-03-development.md）。
 
 ## 目的と範囲
 
@@ -63,4 +65,4 @@ neoforgeはレジストリ列挙、coreは追加フィールド検証とアイ�
 ## 根拠
 
 対象版の生成ソースでBuiltInRegistries.ITEMとRegistryのキー列挙を確認。現在のSnapshotCollector、DumpJson.decode、RecipeDumpModの失敗・停止経路を確認した。
-旧schema 1の追加フィールド許容と既存検索契約は[dump-format](../../dump-format.md)に従う。
+旧schema 1の追加フィールド許容と既存検索契約は[dump-format](../../reference/dump-format.md)に従う。

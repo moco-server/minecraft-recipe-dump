@@ -21,6 +21,6 @@
 
 `./gradlew check`は整形検査・型解決付き解析・テストを実行する。整形修正は明示的に`./gradlew ktlintFormat`を実行する。detektのformatting拡張は使用しない。警告や違反を修正後、再度checkを実行する。
 
-解析の対象版は[互換性記録](../../../../docs/compatibility.md)。[detekt 1.23.8のnull規則](https://detekt.dev/docs/1.23.8/rules/potential-bugs/#unsafecallonnullabletype)を使用する。
+解析の対象版は[互換性記録](../../../../docs/reference/compatibility.md)。[detekt 1.23.8のnull規則](https://detekt.dev/docs/1.23.8/rules/potential-bugs/#unsafecallonnullabletype)を使用する。
 
 `checkCoreBoundary`はcoreの本番compile/runtime classpathのJAR・ディレクトリと本番bytecodeを検査する。推移依存・signature・annotation・命令参照も対象。連携先の禁止prefixはcoreのtaskへ追加する。解析用ASMはbuildSrc限定。buildSrcの整形・単体テストもroot checkのcheckBuildLogicで実行する。

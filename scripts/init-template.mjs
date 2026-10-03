@@ -72,7 +72,8 @@ function initialize() {
   });
   add(join(root, 'settings.gradle.kts'), join(root, 'settings.gradle.kts'), (text) => text.replace('rootProject.name = \"minecraft-mod-template\"', `rootProject.name = \"${values['mod-id']}\"`));
   add(join(root, 'package.json'), join(root, 'package.json'), (text) => { const manifest = JSON.parse(text); manifest.name = `${values['mod-id']}-tools`; return JSON.stringify(manifest, null, 2) + '\n'; });
-  for (const path of ['README.md', 'AGENTS.md', 'docs/design.md', '.agents/skills/mod-implement/references/development.md', 'docs/verification.md', 'docs/compatibility.md', '.agents/skills/mod-kotlin/references/coding-conventions.md', 'docs/template-updates.md', 'docs/external-skills.md', 'docs/client-acceptance.md']) add(join(root, path));
+  // 継承した旧配置のfixtureと、整理後の現行文書配置をどちらも扱う。
+  for (const path of ['README.md', 'AGENTS.md', 'docs/design.md', '.agents/skills/mod-implement/references/development.md', 'docs/verification.md', 'docs/compatibility.md', '.agents/skills/mod-kotlin/references/coding-conventions.md', 'docs/template-updates.md', 'docs/external-skills.md', 'docs/client-acceptance.md', 'docs/README.md', 'docs/design/architecture.md', 'docs/design/decisions.md', 'docs/reference/compatibility.md', 'docs/verification/README.md', 'docs/guides/template-updates.md', 'docs/guides/external-skills.md']) add(join(root, path));
   const oldPath = originalPackage.replaceAll('.', sep); const newPath = values.package.replaceAll('.', sep);
   const roots = ['core/src/main/kotlin', 'core/src/test/kotlin', 'neoforge/src/main/kotlin', 'neoforge/src/gametest/kotlin', 'neoforge/src/main/resources', 'neoforge/src/main/templates', 'neoforge/src/gametest/resources', 'neoforge/src/gametest/templates', 'neoforge/src/generated/resources'];
   function walk(path) {

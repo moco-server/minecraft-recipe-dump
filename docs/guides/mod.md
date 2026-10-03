@@ -2,11 +2,11 @@
 
 専用サーバーで実際に読み込まれたレシピを収集し、JSONファイルへ保存するMODです。ゲーム画面やプレイヤー接続は不要です。アイテム・装置・ゲーム進行は追加しません。
 
-保存したJSONを調べる手順は [CLI利用ガイド](cli.md)、プロジェクト全体とソースからのビルドは [ルートREADME](../README.md) を参照してください。
+保存したJSONを調べる手順は [CLI利用ガイド](cli.md)、プロジェクト全体とソースからのビルドは [ルートREADME](../../README.md) を参照してください。
 
 ## 入手と必要環境
 
-MODの配布先はCurseForge／Modrinthを予定しています。本ガイドにはまだ本MODの公開配布ページへのリンクを掲載していません。公開前に利用する場合は、[開発手順](../README.md#開発)で通常MOD JARをビルドしてください。
+MODの配布先はCurseForge／Modrinthを予定しています。本ガイドにはまだ本MODの公開配布ページへのリンクを掲載していません。公開前に利用する場合は、[開発手順](../../README.md#開発)で通常MOD JARをビルドしてください。
 
 | 必要なもの | 初期対応・検証構成 |
 | --- | --- |
@@ -15,7 +15,7 @@ MODの配布先はCurseForge／Modrinthを予定しています。本ガイド�
 | Java | 21 |
 | 実行時依存MOD | KotlinForForge 5.5.0 |
 
-配布ページではMinecraft版とLoaderを確認し、通常MOD JARを選びます。sources JARはサーバーに導入するファイルではありません。KotlinForForgeも別途必要です。詳しい対応根拠は [対応構成](compatibility.md)、実測と未検証範囲は [検証記録](verification.md) を参照してください。
+配布ページではMinecraft版とLoaderを確認し、通常MOD JARを選びます。sources JARはサーバーに導入するファイルではありません。KotlinForForgeも別途必要です。詳しい対応根拠は [対応構成](../reference/compatibility.md)、実測と未検証範囲は [検証記録](../verification/README.md) を参照してください。
 
 ## 専用サーバーへの導入と収集
 
@@ -56,7 +56,7 @@ schemaVersion 1の `recipes` は現在のRecipeManagerのスナップショッ�
 
 元JSONの条件や既定値の書き方は保持されないことがあります。RecipeManager外の独自加工、JEI／EMI専用表示、後のティックやreloadでの変更、他Loader・他Minecraft版は今回の保証範囲に含みません。
 
-出力フィールドの詳細は [ダンプ形式](dump-format.md) を参照してください。
+出力フィールドの詳細は [ダンプ形式](../reference/dump-format.md) を参照してください。
 
 ## うまく動かない場合
 

@@ -1,5 +1,7 @@
 # 第2段階: 全登録アイテム Implementation Plan
 
+> 履歴資料: この作業は完了済み。本文は当時の設計・計画であり、現行仕様や実行指示ではない。現在の契約は [ダンプ形式](../../reference/dump-format.md) と [CLI検索・差分仕様](../../reference/cli-search.md)、実測は [検証記録](../../verification/README.md) を参照する。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 全登録アイテムの一覧とnamespace検索を、新旧ダンプ互換性を保って提供する。
@@ -56,7 +58,7 @@
 
 ### Task 3: registry収集と通常JAR受け入れ
 
-**Files:** Modify `neoforge/src/main/kotlin/org/mocoserver/recipedump/SnapshotCollector.kt`, `neoforge/src/gametest/kotlin/org/mocoserver/recipedump/tests/RecipeDumpGameTests.kt`, `docs/verification.md`, `docs/superpowers/specs/2026-10-03-item-inventory-design.md`。
+**Files:** Modify `neoforge/src/main/kotlin/org/mocoserver/recipedump/SnapshotCollector.kt`, `neoforge/src/gametest/kotlin/org/mocoserver/recipedump/tests/RecipeDumpGameTests.kt`, `docs/verification/records/2026-10-03-development.md`, `docs/archive/specs/2026-10-03-item-inventory-design.md`。
 
 **Interfaces:** 既存`SnapshotCollector.collect(server: MinecraftServer): JsonObject`の同一snapshotへitemsを追加。core／CLIのTask 1–2契約を消費。
 
@@ -79,4 +81,4 @@ node scripts/check-gametest-result.mjs
 node --test scripts/test/*.test.mjs
 ```
 
-期待値: 全task成功、GameTestの必須件数が正かつ失敗0、Node全件成功。配布CLIの照合には`./gradlew :cli:installDist`の生成物を使う。Gradleには既存の`/tmp/recipe-dump-cli-search/.local/gradle`キャッシュを利用する。整形は`./gradlew ktlintFormat`。ビルド、GameTest、通常JAR、CLI照合を混同せずdocs/verification.mdへ別々に記録する。
+期待値: 全task成功、GameTestの必須件数が正かつ失敗0、Node全件成功。配布CLIの照合には`./gradlew :cli:installDist`の生成物を使う。Gradleには既存の`/tmp/recipe-dump-cli-search/.local/gradle`キャッシュを利用する。整形は`./gradlew ktlintFormat`。ビルド、GameTest、通常JAR、CLI照合を混同せずdocs/verification/records/2026-10-03-development.mdへ別々に記録する。

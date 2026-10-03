@@ -4,7 +4,7 @@
 
 ## 入手と必要環境
 
-CLIの配布先は [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) を予定しています。Releaseへのアーカイブ添付と、このガイドの同梱は次フェーズです。公開前に利用する場合は [ソースからの起動手順](../README.md#開発) を参照してください。
+CLIの配布先は [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) を予定しています。Releaseへのアーカイブ添付と、このガイドの同梱は次フェーズです。公開前に利用する場合は [ソースからの起動手順](../../README.md#開発) を参照してください。
 
 以下は配布ZIPを入手した場合の手順です。Java 21を用意し、`JAVA_HOME` をそのインストール先へ設定します。ZIPには起動スクリプトと依存JARが含まれますが、Java本体は含まれません。
 
@@ -102,4 +102,4 @@ NeoForgeのcompound／intersection／difference材料を三値で評価します
 - ダンプの読み込みに失敗する場合は、ファイルパスとstderrを確認します。不完全なダンプは [収集MODの手順](mod.md#今回の収集が成功したか確認する) に沿って再収集します。
 - 装置別名が未対応の場合は `stations` で確認し、RecipeTypeが分かれば `--type` で直接検索します。
 
-ダンプの仕様は [ダンプ形式](dump-format.md)、実データでの検証範囲は [検証記録](verification.md) を参照してください。
+ダンプの仕様は [ダンプ形式](../reference/dump-format.md)、検索結果JSON・評価規則は [CLI検索・差分仕様](../reference/cli-search.md)、実データでの検証範囲は [検証記録](../verification/README.md) を参照してください。

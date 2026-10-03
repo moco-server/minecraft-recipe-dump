@@ -12,8 +12,8 @@ MOD入りMinecraftの**実際に読み込まれたレシピを収集し、ゲー
 
 | ツール | 配布先（予定） | 利用ガイド |
 | --- | --- | --- |
-| 収集MOD | CurseForge／Modrinth | [導入・収集・成功確認](docs/mod.md) |
-| CLI | [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) | [展開・起動・集計・検索](docs/cli.md) |
+| 収集MOD | CurseForge／Modrinth | [導入・収集・成功確認](docs/guides/mod.md) |
+| CLI | [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) | [展開・起動・集計・検索](docs/guides/cli.md) |
 
 本READMEには本MODの公開配布ページへのリンクをまだ掲載していません。CLIのRelease添付とガイド同梱は次フェーズです。公開前に使う場合は、下の開発手順でビルドしてください。
 
@@ -49,6 +49,8 @@ Windowsは `gradlew.bat` と `recipe-dump.bat` を使用します。Java 21を `
 
 開発用ダンプ起動は `./gradlew :neoforge:runServerDump`、環境は `.local/dump-server/`（EULA等の初回設定が必要）。対話的クライアントは収集ツールの基本検収には不要です。
 
-LLMは [AGENTS.md](AGENTS.md) と必要なrepo内skillを読みます。[設計](docs/design.md)、[ダンプ形式](docs/dump-format.md)、[対応構成](docs/compatibility.md)、[検証記録](docs/verification.md)に判断と実測を残します。
+文書の入口は [docsの案内](docs/README.md) です。利用手順・現行仕様・設計・検証・過去の計画を分けています。
+
+LLMは [AGENTS.md](AGENTS.md) と必要なrepo内skillを読みます。[設計](docs/design/architecture.md)、[ダンプ形式](docs/reference/dump-format.md)、[対応構成](docs/reference/compatibility.md)、[検証記録](docs/verification/README.md)に判断と実測を残します。
 
 基盤は [moco-server/minecraft-mod-template](https://github.com/moco-server/minecraft-mod-template) 0.1.0です。識別情報は初期化済みで、初期化scriptを再実行する必要はありません。非公開repo、ソースライセンスはMITです。

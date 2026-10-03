@@ -1,5 +1,7 @@
 # CLI検索の設計案
 
+> 履歴資料: この作業は完了済み。本文は当時の設計・計画であり、現行仕様や実行指示ではない。現在の契約は [ダンプ形式](../../reference/dump-format.md) と [CLI検索・差分仕様](../../reference/cli-search.md)、実測は [検証記録](../../verification/README.md) を参照する。
+
 状態: 第1〜4段階は設計承認・実装・受け入れ検証済み。後続3段階は全体レビューと指摘修正済み。詳細設計は下記の別文書に記載。
 
 ## 目的
@@ -9,7 +11,7 @@
 MOD IDによる検索はIDのnamespaceによる検索として提供する。
 
 初期対応はMinecraft 1.21.1／NeoForge 21.1.252。現在のcore／neoforge／cliの境界を維持する。
-この文書は承認済みの段階的方針を記録し、現在の実装・出力契約は[design](../../design.md)と[dump-format](../../dump-format.md)を参照する。
+この文書は承認済みの段階的方針を記録し、現在の実装・出力契約は[design](../../design/architecture.md)と[dump-format](../../reference/dump-format.md)を参照する。
 
 ## 方針と段階
 
