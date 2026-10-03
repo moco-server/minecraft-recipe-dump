@@ -12,7 +12,7 @@
 | ktlint plugin／本体 | 12.1.2／1.5.0 |
 | JUnit | 5.11.4 |
 
-KFF 5.5.0の公開module metadataはKotlin 2.0.10を要求する。開発コンパイラ・stdlibは同世代の2.0.21に揃え、detekt 1.23.8のcompiler版と一致させた。KFFが提供するcoroutines等は実行環境の構成要素であり、サンプルでは使用しない。coreはKFFに依存しない。
+KFF 5.5.0の公開module metadataはKotlin 2.0.10を要求する。開発コンパイラ・stdlibは同世代の2.0.21に揃え、detekt 1.23.8のcompiler版と一致させた。KFFが提供するcoroutines等は実行環境の構成要素であり、このツールでは使用しない。coreとCLIはKFFに依存しない。GsonはMinecraftと同じ2.10.1を使用する。
 
 一次資料: [KFF metadata](https://thedarkcolour.github.io/KotlinForForge/thedarkcolour/kfflang-neoforge/5.5.0/kfflang-neoforge-5.5.0.module)、[detekt互換表](https://detekt.dev/docs/1.23.8/introduction/compatibility/)、[NeoForge 1.21.1](https://docs.neoforged.net/docs/1.21.1/gettingstarted/)。
 
@@ -22,4 +22,4 @@ Wrapperは配布SHA256を固定する。初版では動的版指定を避け、c
 
 追加の全artifact checksum verificationは初版では未導入。Wrapper checksumと固定依存、core／buildSrc lock、実取得物のhash記録を使う。Minecraft生成artifactとOS別nativeの検証範囲を確認してから追加する。
 
-配布環境では[作者のKotlinForForge 5.5.0配布JAR](https://modrinth.com/mod/kotlin-for-forge/version/tdvjylfz)を使う。Mavenのkotlinforforge-neoforge-5.5.0-all.jarはstdlib等のみの開発用aggregateであり、単体ではlanguage providerを含まない。Gradle側では推移依存のkfflang／kffmodも解決されるためdev起動が成功する。配布用kotlinforforge-5.5.0-all.jarとは区別する。配布実行時stdlibは2.0.10、開発compiler／core stdlibは2.0.21で、サンプルの通常JAR起動も別に検証する。
+配布環境では[作者のKotlinForForge 5.5.0配布JAR](https://modrinth.com/mod/kotlin-for-forge/version/tdvjylfz)を使う。Mavenのkotlinforforge-neoforge-5.5.0-all.jarはstdlib等のみの開発用aggregateであり、単体ではlanguage providerを含まない。Gradle側では推移依存のkfflang／kffmodも解決されるためdev起動が成功する。配布用kotlinforforge-5.5.0-all.jarとは区別する。配布実行時stdlibは2.0.10、開発compiler／core stdlibは2.0.21で、収集MODの通常JAR起動も別に検証する。

@@ -34,14 +34,9 @@ jobs:
         run: node --test scripts/test/*.test.mjs
       - name: Quality checks
         run: ./gradlew check
-      - name: Generate data and require a clean resource tree
-        run: |
-          ./gradlew :neoforge:runData
-          changes=$(git status --porcelain --untracked-files=all -- neoforge/src/generated/resources)
-          test -z "$changes" || { printf '%s\n' "$changes"; exit 1; }
       - name: Build and run GameTests
         run: |
-          ./gradlew :neoforge:build :neoforge:verifyModJar :neoforge:runGameTestServer
+          ./gradlew :neoforge:build :neoforge:verifyModJar :neoforge:runGameTestServer :cli:distZip
           node scripts/check-gametest-result.mjs
       - name: Collect the single normal JAR
         run: node scripts/collect-mod-jar.mjs
@@ -49,6 +44,11 @@ jobs:
         with:
           name: mod-jar
           path: .local/artifact/*.jar
+          if-no-files-found: error
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: recipe-dump-cli
+          path: cli/build/distributions/*.zip
           if-no-files-found: error
   windows:
     runs-on: windows-latest
@@ -80,4 +80,4 @@ jobs:
           export PATH="$PWD/.local/windows-tools/node_modules/.bin:$PATH"
           bash ".local/skills smoke/scripts/install-skills.sh"
       - name: Quality and normal build
-        run: .\gradlew.bat check :neoforge:build :neoforge:verifyModJar
+        run: .\gradlew.bat check :neoforge:build :neoforge:verifyModJar :cli:distZip

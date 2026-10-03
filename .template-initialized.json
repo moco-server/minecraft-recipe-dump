@@ -1,0 +1,9 @@
+{
+  "templateVersion": "0.1.0",
+  "modId": "minecraft_recipe_dump",
+  "package": "org.mocoserver.recipedump",
+  "group": "org.mocoserver.recipedump",
+  "name": "Minecraft Recipe Dump",
+  "author": "moco-server",
+  "repoUrl": "https://github.com/moco-server/minecraft-recipe-dump"
+}
