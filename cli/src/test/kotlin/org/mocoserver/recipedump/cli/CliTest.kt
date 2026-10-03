@@ -1,5 +1,6 @@
 package org.mocoserver.recipedump.cli
 
+import com.google.gson.JsonNull
 import com.google.gson.JsonParser
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -59,6 +60,32 @@ class CliTest {
                 )
             }
         }
+    }
+
+    @Test
+    fun `recipe JSON preserves explicit null fields`(
+        @TempDir directory: Path,
+    ) {
+        val file = directory.resolve("dump.json")
+        val input = JsonParser.parseString(fixture).asJsonObject
+        val recipe = input.getAsJsonArray("recipes")[2].asJsonObject
+        recipe.add("nullable", JsonNull.INSTANCE)
+        recipe.getAsJsonObject("data").add("custom", JsonNull.INSTANCE)
+        recipe.getAsJsonObject("data").add("list", JsonParser.parseString("[{\"custom\":null},null]"))
+        recipe.getAsJsonObject("data").getAsJsonObject("result").add("custom", JsonNull.INSTANCE)
+        Files.writeString(file, input.toString())
+        val result = execute(listOf("recipes", file.toString(), "--id", "create:a"))
+        assertEquals(0, result.code)
+        assertEquals("", result.errors)
+        val row =
+            JsonParser
+                .parseString(result.output)
+                .asJsonObject
+                .getAsJsonArray("recipes")[0]
+                .asJsonObject
+        assertEquals(recipe, row)
+        assertEquals(JsonNull.INSTANCE, row.get("nullable"))
+        assertEquals(JsonNull.INSTANCE, row.getAsJsonObject("data").get("custom"))
     }
 
     @Test

@@ -20,7 +20,7 @@ JSON object。初期Java実証のschema 1もCLIで読み込める。読み込み
 
 ## 検索契約
 
-検索追加によるschemaVersion 1の変更はない。`recipes` コマンドはID・type・レシピIDのnamespaceを完全一致のAND条件で絞る。行全体を保持し、ID昇順で `recipes` と `count` を返す。入力snapshotを変更しない。
+検索追加によるschemaVersion 1の変更はない。`recipes` コマンドはID・type・レシピIDのnamespaceを完全一致のAND条件で絞る。明示的なnullや未知の追加フィールドを含む行全体を保持し、ID昇順で `recipes` と `count` を返す。入力snapshotを変更しない。
 
 `items --tag` は `itemTags` のキーを完全一致で参照し、解決済みIDを重複除去して昇順で `tag`・`items`・`count` を返す。参照対象タグの値が文字列配列でなければ拒否する。無関係なタグの値はこの検索では検証しない。未登録タグは空配列と件数0を返す。
 

@@ -22,7 +22,7 @@ python3 .local/search-integration/check.py
 ```
 
 変更前のcore／CLI 6テストは成功。検索テストを先に追加し、coreはDumpSearch未実装によるコンパイル失敗、CLIは新コマンド拒否による3テスト失敗を確認してから実装した。
-実装後はcore 13件（新規検索9件）、CLI 7件、buildSrc 7件が失敗・skipなしで成功。完全一致、AND、namespace境界、安定した出力順、未知の検索値の0件、未知フィールド保持、入力の非破壊性、タグ重複除去、不正な参照対象タグ、引数エラーのI/Oに対する優先、既存コマンドを確認した。
+実装後はcore 13件（新規検索9件）、CLIは初回7件・最終修正後8件、buildSrc 7件が失敗・skipなしで成功。完全一致、AND、namespace境界、安定した出力順、未知の検索値の0件、未知フィールド保持、入力の非破壊性、タグ重複除去、不正な参照対象タグ、引数エラーのI/Oに対する優先、既存コマンドを確認した。
 
 root check、整形・型解決付きdetekt、core境界、通常MOD JAR内容検査、CLI ZIP／installDistは成功。GameTestは必須2件が成功し、結果検査scriptでも2件を確認。Node scriptテスト29件は失敗0件。
 Gradle 9に関する既存の非推奨警告とbuildSrcのplugin descriptor警告は残るが、各検証は成功した。
@@ -39,7 +39,8 @@ Gradle 9に関する既存の非推奨警告とbuildSrcのplugin descriptor警�
 入力hash・照合script・結果JSON・ログは.local/search-integrationと.localに保存しGit除外。
 
 未検証: Windowsネイティブの配布CLI起動。全登録アイテム一覧、材料・出力・装置名検索は未実装。
-CodeRabbitの外部サービスへの差分送信は自動承認レビューで拒否されたため未実施。別エージェントによる外部送信を伴わないレビューを使用する。
+CodeRabbitの外部サービスへの差分送信は自動承認レビューで拒否されたため未実施。別エージェントによる外部送信を伴わない最終レビューで、CLIのGson出力が明示的なnullフィールドを省略する問題を1件検出した。
+レシピ行・data内・ネストしたobject・配列内objectのnull保持を確認する回帰テストを追加し、失敗を再現してからrecipes出力だけにserializeNullsを適用した。summary／csv／diffの出力方針は維持した。修正後にcheck・JAR検査・CLI配布ビルドと39件の実データ検索照合を再実行し成功。配布CLIでも別のnull検証用fixtureを1件処理し、入力行全体の保持を確認した。
 
 ## 2026-10-03: 実証コードのKotlin移植
 

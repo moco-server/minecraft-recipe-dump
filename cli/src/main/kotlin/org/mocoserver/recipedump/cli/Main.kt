@@ -26,7 +26,10 @@ internal fun runCli(
         val command = args.firstOrNull()
         val search = validateArguments(args)
         val dump = DumpJson.decode(Files.readString(Path.of(args[1])))
-        val gson = GsonBuilder().setPrettyPrinting().create()
+        val gsonBuilder = GsonBuilder().setPrettyPrinting()
+        // レシピ行全体の保持契約では、独自codecや追加フィールドの明示的なnullも失わせない。
+        if (command == "recipes") gsonBuilder.serializeNulls()
+        val gson = gsonBuilder.create()
         when (command) {
             "recipes" -> {
                 val filters = requireNotNull(search)
