@@ -1,0 +1,19 @@
+{
+  "id": "minecraft:acacia_button",
+  "type": "minecraft:crafting",
+  "serializer": "minecraft:crafting_shapeless",
+  "data": {
+    "group": "wooden_button",
+    "category": "redstone",
+    "result": {
+      "id": "minecraft:acacia_button",
+      "count": 1
+    },
+    "ingredients": [
+      {
+        "item": "minecraft:acacia_planks"
+      }
+    ],
+    "type": "minecraft:crafting_shapeless"
+  }
+}

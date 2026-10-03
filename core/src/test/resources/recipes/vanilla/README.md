@@ -1,0 +1,1 @@
+Minecraft 1.21.1 / NeoForge 21.1.252のRecipe.CODEC往復に成功したbaseline snapshotから各バニラserializerの実行を抽出。source: 親repo .local/integration/baseline.json（4,749行）。行とcodec dataは改変せず保存。未知・不正形はテスト内で別途生成し、実codec fixtureと区別する。

@@ -1,0 +1,17 @@
+{
+  "id": "minecraft:bolt_armor_trim_smithing_template_smithing_trim",
+  "type": "minecraft:smithing",
+  "serializer": "minecraft:smithing_trim",
+  "data": {
+    "template": {
+      "item": "minecraft:bolt_armor_trim_smithing_template"
+    },
+    "base": {
+      "tag": "minecraft:trimmable_armor"
+    },
+    "addition": {
+      "tag": "minecraft:trim_materials"
+    },
+    "type": "minecraft:smithing_trim"
+  }
+}
