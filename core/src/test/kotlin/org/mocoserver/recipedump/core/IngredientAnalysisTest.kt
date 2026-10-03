@@ -16,6 +16,27 @@ class IngredientAnalysisTest {
         evaluateIngredient(JsonParser.parseString(json), dump, "test:a", "$.ingredient")
 
     @Test
+    fun `compound intersection and difference preserve unknown children`() {
+        for (field in listOf("children", "ingredients")) {
+            assertEquals(MatchState.MATCH, evaluate("""{"type":"neoforge:compound","$field":[{"item":"test:a"},{"type":"test:unknown"}]}""").state)
+        }
+        assertEquals(MatchState.NO_MATCH, evaluate("""{"type":"neoforge:intersection","children":[{"item":"test:b"},{"type":"test:unknown"}]}""").state)
+        assertEquals(MatchState.UNKNOWN, evaluate("""{"type":"neoforge:intersection","children":[{"item":"test:a"},{"type":"test:unknown"}]}""").state)
+        assertEquals(MatchState.MATCH, evaluate("""{"type":"neoforge:intersection","children":[{"item":"test:a"},{"tag":"test:present"}]}""").state)
+        assertEquals(MatchState.MATCH, evaluate("""{"type":"neoforge:difference","base":{"item":"test:a"},"subtracted":{"item":"test:b"}}""").state)
+        assertEquals(MatchState.NO_MATCH, evaluate("""{"type":"neoforge:difference","base":{"item":"test:a"},"subtracted":{"item":"test:a"}}""").state)
+        assertEquals(MatchState.UNKNOWN, evaluate("""{"type":"neoforge:difference","base":{"item":"test:a"},"subtracted":{"type":"test:unknown"}}""").state)
+        assertEquals(MatchState.NO_MATCH, evaluate("""{"type":"neoforge:difference","base":{"item":"test:b"},"subtracted":{"type":"test:unknown"}}""").state)
+        for (invalid in listOf(
+            """{"type":"neoforge:compound"}""",
+            """{"type":"neoforge:intersection","children":[]}""",
+            """{"type":"neoforge:compound","children":null}""",
+            """{"type":"neoforge:difference","base":{"item":"test:a"}}""",
+        )) assertEquals("invalid_shape", evaluate(invalid).issues.first().code)
+        assertEquals(MatchState.UNKNOWN, evaluate("""{"type":"farmersdelight:item_ability","action":"axe_strip"}""").state)
+    }
+
+    @Test
     fun `three valued OR prefers proof and AND prefers disproof`() {
         val match = MatchEvaluation(MatchState.MATCH)
         val no = MatchEvaluation(MatchState.NO_MATCH)
