@@ -6,6 +6,7 @@
 | --- | --- |
 | 収集MODを導入してダンプを作る | [収集MOD利用ガイド](guides/mod.md) |
 | ダンプをCLIで調べる | [CLI利用ガイド](guides/cli.md) |
+| MOD開発プロジェクトのLLMからCLIを使う | [導入手順](guides/cli.md#mod開発プロジェクトでllmから使う)、[利用者向けskill](../skills/recipe-dump-cli/SKILL.md) |
 | ソースからビルド・検証する | [READMEの開発手順](../README.md#開発) |
 | タグからGitHub Releaseを公開する | [Releaseガイド](guides/release.md) |
 | 外部skillsを導入・更新する | [外部skills](guides/external-skills.md) |

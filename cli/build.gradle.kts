@@ -43,6 +43,10 @@ distributions {
                 }
             }
             from(rootProject.file("LICENSE"))
+            // 導入先へコピーできる利用者向けskillを、開発用skillsと分けて配布する。
+            from(rootProject.file("skills/recipe-dump-cli")) {
+                into("skills/recipe-dump-cli")
+            }
         }
     }
 }

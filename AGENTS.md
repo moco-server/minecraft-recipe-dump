@@ -34,6 +34,8 @@ Minecraft／Loader本来の読み込みで有効になったレシピを収集�
 
 ## repo内skills
 
+CLI利用者へ配布するskillは `skills/recipe-dump-cli/` に置き、CLI ZIPへ同梱する。以下の開発用skillsとは用途を分ける。CLIの引数・検索・終了コードの仕様を変更したら、利用ガイドと配布用skillも更新する。
+
 必要なものだけ読む。テンプレート由来の一般MOD向け記述は、このrepoの収集ツールとしての目的・契約を優先して適用する。
 
 | 作業 | skill |

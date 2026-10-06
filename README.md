@@ -21,6 +21,8 @@ MOD入りMinecraftの**実際に読み込まれたレシピを収集し、ゲー
 
 収集MODは明示的に有効にした専用サーバーだけで収集し、保存後に停止します。有効化しない場合は収集・自動停止を行いません。ダンプはRecipeManagerのスナップショットで、入力全件の読み込み成功やRecipeManager外の全加工を保証するものではありません。範囲と確認方法は各ガイドを参照してください。
 
+CLI ZIPには、別のMOD開発プロジェクトのLLMが検索・差分に使う [recipe-dump-cli skill](skills/recipe-dump-cli/SKILL.md) も同梱します。[導入手順](docs/guides/cli.md#mod開発プロジェクトでllmから使う)に従って導入先へコピーしてください。このrepo自身の開発用skillsとは別の配布物です。
+
 ## 開発
 
 | module | 担当 |

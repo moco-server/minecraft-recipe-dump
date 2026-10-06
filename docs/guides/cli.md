@@ -28,6 +28,26 @@ Windowsのコマンドプロンプトでも `bin\recipe-dump.bat` を使えま�
 
 以降の例の `recipe-dump` はLinux／macOSでは `./bin/recipe-dump`、Windowsでは `.\bin\recipe-dump.bat` に置き換えてください。`bin/` をPATHへ追加した場合は、そのまま実行できます。
 
+## MOD開発プロジェクトでLLMから使う
+
+CLI ZIPには利用者向けの `skills/recipe-dump-cli/` を同梱します。[recipe-dump-cli skill](../../skills/recipe-dump-cli/SKILL.md) は検索・差分・終了コードと結果の判断を扱い、このツール自身の開発用skillsには依存しません。
+
+1. ZIPの `skills/recipe-dump-cli/` を、導入先プロジェクトの `.agents/skills/recipe-dump-cli/` へフォルダーごとコピーします。ソースから利用する場合もrepo直下の同じフォルダーをコピーできます。
+2. CLI本体は `bin/` と `lib/` を揃えて別途配置し、Java 21を用意します。skillだけではCLIは実行できません。
+3. 導入先の `AGENTS.md` にskillの入口、CLI起動スクリプトと対象ダンプのパス、収集構成・再収集手順の参照先を書きます。ログ・ダンプ等は導入先の生成物用ディレクトリへ置きます。
+
+例えば導入先の配置に合わせて、次のように記します。
+
+```markdown
+レシピ・材料・出力・加工装置の調査と変更前後の比較には
+.agents/skills/recipe-dump-cli/SKILL.md を読む。
+CLI: .local/tools/recipe-dump/bin/recipe-dump
+対象ダンプ: .local/recipe-dumps/current.json
+収集構成と再収集手順: docs/recipe-dump.md
+```
+
+最後の手順書には対象MOD・依存・設定・データパック、収集サーバーの場所と起動方法を記します。MOD・設定等を変更したら新しい出力先へ再収集し、[保存成功の確認](mod.md#今回の収集が成功したか確認する)を行います。現在の構成と一致するダンプであることを確認してからLLMに検索を依頼してください。
+
 ## よく使うコマンド
 
 ```sh

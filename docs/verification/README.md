@@ -28,6 +28,8 @@
 
 ## 実測記録
 
+- [2026-10-06 CLI利用者向けskill](records/2026-10-06-cli-consumer-skill.md): CLI ZIPへのskill同梱、配布CLIの16照合、LLMによる利用手順確認。ビルド成功、Node 50件成功。今回のGameTest再実行はfml_loaderモジュール重複で起動失敗し、成功件数未確認。
+
 - [2026-10-03 Release CD](records/2026-10-03-release-cd.md): タグと版・成果物の検証、draft公開手順のAPI境界テスト、CLIガイド同梱、ビルド・新規ワールドのGameTest・配布ZIPの起動。
 
 - [2026-10-03 文書整理](records/2026-10-03-docs-reorganization.md): 文書分類・参照更新、開発scriptの新配置対応、ビルド・新規ワールドのGameTest・Nodeテスト。
