@@ -4,7 +4,7 @@
 
 ## 入手と必要環境
 
-CLIの配布先は [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) です。`v*` タグのpushで検証に成功したCLI ZIPを添付し、このガイドをZIP内の `README.md` に同梱します。まだReleaseがない場合は [ソースからの起動手順](../../README.md#開発) を参照してください。
+CLIの配布先は [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) です。リリースPRのマージ後に検証したCLI ZIPを添付し、このガイドをZIP内の `README.md` に同梱します。まだReleaseがない場合は [ソースからの起動手順](../../README.md#開発) を参照してください。
 
 以下は配布ZIPを入手した場合の手順です。Java 21を用意し、`JAVA_HOME` をそのインストール先へ設定します。ZIPには起動スクリプトと依存JARが含まれますが、Java本体は含まれません。
 

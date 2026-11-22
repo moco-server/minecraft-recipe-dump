@@ -1,35 +1,33 @@
-# GitHub Releaseの作成
+# Changesetsでリリースする
 
-[Verify and Release workflow](../../.github/workflows/verify.yml) は、`v*` タグのpushで検証し、成功した成果物をGitHub Releaseへ添付する。ブランチpush・PR・手動のworkflow_dispatchでは検証とActions artifactの保存だけを行う。
+通常MOD JARとCLI ZIPは同じバージョンで公開する。公開のタイミングは、メンテナーがChangesetsのリリースPRを `main` へマージした時点で決まる。
 
-## 版とタグ
+## 変更をリリースに含める
 
-`gradle.properties` の `mod_version` をSemVerへ更新し、その変更と配布するコードをコミットする。タグは `v<mod_version>` と完全一致させる。例えば `mod_version=0.1.0` なら `v0.1.0`、`mod_version=0.1.0-rc.1` なら `v0.1.0-rc.1`。現在の開発版 `0.1.0-dev` もPre-releaseとして扱う。
+1. Node.js 24とpnpm 12.8.1で `pnpm install --frozen-lockfile --ignore-scripts` を実行する。
+2. 配布に含めたい変更のブランチで `pnpm changeset` を実行し、版の上げ幅（patch／minor／major）と利用者向けの変更内容を入力する。生成された `.changeset/*.md` を変更と同じPRに含める。
+3. `main` に変更が入ると、Changesetsが `changeset-release/main` のPRを作成・更新する。PRには今回分の変更履歴、`package.json` の新しい版、同じ版の `gradle.properties` の `mod_version` が入る。
+4. 版と変更履歴を確認し、通常配布JARの検証を終えたら、このPRをマージする。[Release workflow](../../.github/workflows/release.yml) がマージコミットで [Linux・Windowsの検証](../../.github/workflows/verify.yml) を実行する。両方が成功すると、そのコミットに `v<version>` タグを作成する。
 
-版の準備と通常配布JARの検証を終えたら、対象コミットにタグを作成してpushする。以下は `mod_version=0.1.0` に更新済みの場合の例。
+初回用のpatch changesetは開発版 `0.1.0-dev` を `0.1.0` に更新する。通常の変更PRのマージ、changesetがないpush、タグの手動pushでは配布物を公開しない。
 
-```sh
-git tag -a v0.1.0 -m "Release 0.1.0"
-git push origin v0.1.0
-```
+## 配布物と取得先
 
-CDはタグと版番号の不一致、不正な版形式をビルド前に拒否する。公開前の通常JAR・専用サーバー検証は [検証の現状](../verification/README.md) とrepoの作業規約に従う。CDのGameTestは通常配布JARの実行検証を代替しない。
+GitHub Releaseには、同じ実行のLinuxジョブで検証した通常MOD JARとCLI ZIPを添付する。Releaseノートには今回のChangesetsの変更履歴を使う。Pre-releaseにはLatestを付けない。
 
-## 公開する成果物
+Release公開後、各ファイルをそのReleaseからダウンロードし、以下の座標でGitHub Packagesへ登録する。
 
-Linux・Windows両方の検証が成功した後、Linux jobの同一workflow実行から成果物をダウンロードする。再ビルドはしない。
+| Release添付ファイル | Maven座標 | 形式 |
+| --- | --- | --- |
+| `minecraft_recipe_dump-<version>.jar` | `org.mocoserver.recipedump:minecraft-recipe-dump:<version>` | jar |
+| `recipe-dump-<version>.zip` | `org.mocoserver.recipedump:recipe-dump-cli:<version>` | zip |
 
-- `minecraft_recipe_dump-<version>.jar`: 内容検査済みの通常MOD JAR。sources・GameTest JARは添付しない。
-- `recipe-dump-<version>.zip`: Java 21用のCLI起動script・依存JAR・利用ガイド `README.md`・LICENSE。
+MavenリポジトリのURLは `https://maven.pkg.github.com/moco-server/minecraft-recipe-dump`。CLIをMavenから取得するときはtypeに `zip` を指定する。Packagesからの取得には、パッケージの読み取り権限を持つ認証情報が必要になる。[GitHub Mavenレジストリの認証](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
 
-ダウンロード後に版番号付きファイル名、2ファイルだけであること、通常ファイルで空でないことを確認する。CLIガイドの関連リンクは、同じ `v<version>` タグのGitHub上の文書へ変換する。repoが非公開の場合は文書リンクにもrepoへのアクセス権が必要だが、同梱の利用手順はローカルで読める。
+## GitHubの設定と復旧
 
-ReleaseノートはGitHubの自動生成を使う。通常版はRelease、`-dev`／`-rc.1` 等の付いた版はPre-releaseとし、Pre-releaseはLatestにしない。追加secretは不要で、公開jobだけに `GITHUB_TOKEN` の `contents: write` を付与する。
+リポジトリの **Settings → Actions → General → Workflow permissions** で **Allow GitHub Actions to create and approve pull requests** を有効にする。組織側でもPR作成、タグ作成、Mavenパッケージ作成を許可しておく。各ジョブはリポジトリの `GITHUB_TOKEN` を使い、PR作成、Release公開、Packages登録に必要な権限を個別に要求する。
 
-## 失敗と再実行
+検証が失敗した場合はReleaseを作成しない。添付中に失敗した場合はdraftが残る。原因を解消して、該当する **Release** 実行で **Re-run failed jobs** を選ぶ。同じコミットのタグと既存draftから再開できる。公開済みのReleaseの添付ファイルは上書きしない。
 
-公開はdraft作成 → 2成果物の添付 → draft解除の順に進める。添付・公開が失敗した場合はdraftを残し、同じタグのworkflowを再実行して復旧できる。既存draftの同名添付は置換するが、公開済みReleaseを再実行で上書きしない。公開済み版の修正は新しい版とタグで行う。
-
-タグの検証失敗、どちらかのOSの検証失敗、成果物欠落・混入は公開jobの実行または公開処理を停止する。Actionsの失敗jobのログを確認する。
-
-実装の根拠: [workflowのタグ条件・権限・job依存](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)、[gh release create](https://cli.github.com/manual/gh_release_create)、[gh release upload](https://cli.github.com/manual/gh_release_upload)、[gh release edit](https://cli.github.com/manual/gh_release_edit)。
+Packagesの登録はJARとZIPを別々のジョブで行う。一方が失敗した場合も **Re-run failed jobs** で失敗したジョブだけを再実行できる。既に同じ座標・版が登録されている場合は実物を確認する。配布物を修正する場合は新しいchangesetで次の版を公開する。

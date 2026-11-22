@@ -1,0 +1,126 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [closed]
+permissions:
+  contents: read
+jobs:
+  changesets:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency: changesets-main
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install release tools
+        run: |
+          npm install --global pnpm@12.8.1
+          pnpm install --frozen-lockfile --ignore-scripts
+      - uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        with:
+          version: pnpm run release:version
+          title: Release Minecraft Recipe Dump
+          commitMode: github-api
+
+  verify:
+    if: >-
+      github.event_name == 'pull_request' && github.event.pull_request.merged &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'changeset-release/main'
+    uses: ./.github/workflows/verify.yml
+    with:
+      revision: ${{ github.event.pull_request.merge_commit_sha }}
+
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: mod-jar
+          path: .local/release
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: recipe-dump-cli
+          path: .local/release
+      - name: Tag the verified merge commit
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -er .version package.json)
+          tag="v$version"
+          node scripts/release-info.mjs "$tag" .local/release
+          if git show-ref --verify --quiet "refs/tags/$tag"; then
+            test "$(git rev-list -n1 "refs/tags/$tag")" = "$(git rev-parse HEAD)"
+          else
+            gh api 'repos/{owner}/{repo}/git/refs' -f ref="refs/tags/$tag" -f sha="$(git rev-parse HEAD)"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Publish release with verified assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: v${{ steps.tag.outputs.version }}
+        run: bash scripts/publish-release.sh "$RELEASE_TAG" .local/release
+
+  packages:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - artifact: minecraft-recipe-dump
+            filename: minecraft_recipe_dump
+            extension: jar
+          - artifact: recipe-dump-cli
+            filename: recipe-dump
+            extension: zip
+    steps:
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          server-id: github
+      - name: Publish the release asset to GitHub Packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.release.outputs.version }}
+          ARTIFACT: ${{ matrix.artifact }}
+          FILENAME: ${{ matrix.filename }}
+          EXTENSION: ${{ matrix.extension }}
+        run: |
+          file="$FILENAME-$VERSION.$EXTENSION"
+          gh release download "v$VERSION" --repo "$GITHUB_REPOSITORY" --pattern "$file"
+          mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-deploy-plugin:3.1.4:deploy-file \
+            -DrepositoryId=github -Durl="https://maven.pkg.github.com/${GITHUB_REPOSITORY,,}" \
+            -DgroupId=org.mocoserver.recipedump -DartifactId="$ARTIFACT" -Dversion="$VERSION" \
+            -Dpackaging="$EXTENSION" -Dfile="$file" -DgeneratePom=true

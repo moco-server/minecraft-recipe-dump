@@ -1,9 +1,13 @@
-name: Verify and Release
+name: Verify
 on:
   push:
     branches: ['**']
-    tags: ['v*']
   pull_request:
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       verify-skills:
@@ -13,8 +17,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: verify-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+  group: verify-${{ github.workflow }}-${{ inputs.revision || github.ref }}
+  cancel-in-progress: ${{ !inputs.revision }}
 jobs:
   linux:
     runs-on: ubuntu-latest
@@ -22,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ inputs.revision || github.sha }}
           persist-credentials: false
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
@@ -31,12 +36,9 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - name: Validate release version
-        if: github.event_name == 'push' && github.ref_type == 'tag'
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: node scripts/release-info.mjs "$RELEASE_TAG"
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - name: Check Changesets and Gradle versions
+        run: node scripts/release-info.mjs "v$(jq -r .version package.json)"
       - name: Script tests
         run: node --test scripts/test/*.test.mjs
       - name: Quality checks
@@ -51,6 +53,7 @@ jobs:
         with:
           name: mod-jar
           path: .local/artifact/*.jar
+          include-hidden-files: true
           if-no-files-found: error
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
@@ -63,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ inputs.revision || github.sha }}
           persist-credentials: false
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
@@ -72,11 +76,6 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - name: Validate release version
-        if: github.event_name == 'push' && github.ref_type == 'tag'
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: node scripts/release-info.mjs "$env:RELEASE_TAG"
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
       - name: Initialization tests
         run: node --test scripts/test/init-template.test.mjs scripts/test/pnpm-command.test.mjs
@@ -93,32 +92,3 @@ jobs:
           bash ".local/skills smoke/scripts/install-skills.sh"
       - name: Quality and normal build
         run: .\gradlew.bat check :neoforge:build :neoforge:verifyModJar :cli:distZip
-  release:
-    needs: [linux, windows]
-    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: '24'
-          package-manager-cache: false
-      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
-        with:
-          name: mod-jar
-          path: .local/release
-      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
-        with:
-          name: recipe-dump-cli
-          path: .local/release
-      - name: Publish release with verified assets
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: bash scripts/publish-release.sh "$RELEASE_TAG" .local/release
