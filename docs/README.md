@@ -17,7 +17,6 @@
 | 現在の構成・責務・失敗条件を理解する | [アーキテクチャ](design/architecture.md) |
 | 採用理由と方針変更を確認する | [設計判断](design/decisions.md) |
 | 検証済みの範囲と未検証項目を確認する | [検証の現状と記録](verification/README.md) |
-| 完了した設計案・実装計画を調べる | [設計・計画の履歴](archive/README.md) |
 
 ## 書き分けと更新
 

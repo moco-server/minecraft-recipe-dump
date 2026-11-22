@@ -1,6 +1,6 @@
 # 設計判断
 
-現在の採用理由と方針変更を記す。実行結果は [検証記録](../verification/README.md)、作業手順は [履歴資料](../archive/README.md) へ分ける。
+現在の採用理由と方針変更を記す。実行結果は [検証記録](../verification/README.md) を参照する。
 
 ## Kotlin移植と収集方式（2026-10-03）
 
