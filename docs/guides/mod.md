@@ -6,7 +6,7 @@
 
 ## 入手と必要環境
 
-MODの配布先はCurseForge／Modrinthを予定しています。本ガイドにはまだ本MODの公開配布ページへのリンクを掲載していません。公開前に利用する場合は、[開発手順](../../README.md#開発)で通常MOD JARをビルドしてください。
+通常MOD JARは [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) から取得できます。CurseForge／Modrinthでの配布も予定しています。公開前に利用する場合は、[開発手順](../../README.md#開発)で通常MOD JARをビルドしてください。
 
 | 必要なもの | 初期対応・検証構成 |
 | --- | --- |

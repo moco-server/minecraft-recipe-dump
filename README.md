@@ -10,12 +10,12 @@ MOD入りMinecraftの**実際に読み込まれたレシピを収集し、ゲー
 
 使い方は、入手するツールごとに分けています。配布物を使う場合、リポジトリのcloneやGradleは不要です。
 
-| ツール | 配布先（予定） | 利用ガイド |
+| ツール | 配布先 | 利用ガイド |
 | --- | --- | --- |
-| 収集MOD | CurseForge／Modrinth | [導入・収集・成功確認](docs/guides/mod.md) |
+| 収集MOD | [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) | [導入・収集・成功確認](docs/guides/mod.md) |
 | CLI | [GitHub Releases](https://github.com/moco-server/minecraft-recipe-dump/releases) | [展開・起動・集計・検索](docs/guides/cli.md) |
 
-本READMEには本MODの公開配布ページへのリンクをまだ掲載していません。CLI ZIPには利用ガイドを同梱し、`v*` タグのpushで検証後に通常MOD JARとCLI ZIPをGitHub Releaseへ添付します。手順は [Releaseガイド](docs/guides/release.md) を参照してください。まだReleaseがない場合は、下の開発手順でビルドしてください。
+ChangesetsのリリースPRをマージすると、検証済みの通常MOD JARとCLI ZIPをGitHub Releasesへ添付し、同じファイルをGitHub PackagesのMavenレジストリへ登録します。パッケージ座標と公開手順は [Releaseガイド](docs/guides/release.md) にあります。初回公開前は、下の開発手順でビルドできます。
 
 基本の流れは、対象構成の専用サーバーで収集MODを有効にしてJSONを保存し、そのJSONをCLIで調べる、というものです。CLIは別のPCでも使えます。
 

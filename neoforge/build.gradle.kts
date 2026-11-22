@@ -13,7 +13,10 @@ repositories {
 }
 dependencies {
     implementation(project(":core"))
-    implementation(libs.kff)
+    implementation(libs.kff) {
+        // 開発起動のFMLはNeoForgeが供給する。KFF経由で別版を追加するとモジュールが重複する。
+        exclude(group = "net.neoforged.fancymodloader", module = "loader")
+    }
 }
 val metadata =
     tasks.register<ProcessResources>("generateModMetadata") {

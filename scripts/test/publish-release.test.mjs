@@ -8,11 +8,12 @@ import { fileURLToPath } from 'node:url';
 
 const script = fileURLToPath(new URL('../publish-release.sh', import.meta.url));
 // 外部GitHub APIだけを置き換え、実際の公開scriptのコマンド・順序・失敗停止を検査する。
-function run(t, { state = 'absent', uploadFails = false, version = '1.2.3', tag = `v${version}` } = {}) {
+function run(t, { state = 'absent', uploadFails = false, version = '1.2.3', notesVersion = version, tag = `v${version}` } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'recipe-publish-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, 'bin')); mkdirSync(join(root, 'assets'));
   writeFileSync(join(root, 'gradle.properties'), `mod_id=minecraft_recipe_dump\nmod_version=${version}\n`);
+  writeFileSync(join(root, 'CHANGELOG.md'), `# Changes\n\n## ${notesVersion}\n\nRelease notes\n\n## 0.0.1\nEarlier\n`);
   for (const name of [`minecraft_recipe_dump-${version}.jar`, `recipe-dump-${version}.zip`]) writeFileSync(join(root, 'assets', name), 'artifact');
   writeFileSync(join(root, 'bin/gh'), `#!/usr/bin/env node
 const fs = require('node:fs');
@@ -39,7 +40,7 @@ test('uploads both assets before publishing a stable draft', linux, (t) => {
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(calls, [
     ['release', 'view', 'v1.2.3', '--json', 'isDraft'],
-    ['release', 'create', 'v1.2.3', '--verify-tag', '--draft', '--generate-notes', '--title', 'v1.2.3'],
+    ['release', 'create', 'v1.2.3', '--verify-tag', '--draft', '--notes', 'Release notes', '--title', 'v1.2.3'],
     ['release', 'upload', 'v1.2.3', join(root, 'assets/minecraft_recipe_dump-1.2.3.jar'), join(root, 'assets/recipe-dump-1.2.3.zip'), '--clobber'],
     ['release', 'edit', 'v1.2.3', '--draft=false', '--prerelease=false', '--latest=true'],
   ]);
@@ -69,4 +70,11 @@ test('does not call GitHub when tag validation fails', linux, (t) => {
   const { result, calls } = run(t, { tag: 'v1.2.4' });
   assert.notEqual(result.status, 0);
   assert.deepEqual(calls, []);
+});
+
+test('does not create a draft if this version has no changelog entry', linux, (t) => {
+  const { result, calls } = run(t, { notesVersion: '1.2.2' });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Missing changelog entry/);
+  assert.deepEqual(calls.map((args) => args[1]), ['view']);
 });

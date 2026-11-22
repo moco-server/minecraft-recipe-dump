@@ -16,7 +16,16 @@ if release_state=$(gh release view "$release_tag" --json isDraft); then
 else
   options=()
   if [[ "$prerelease" == true ]]; then options+=(--prerelease); fi
-  gh release create "$release_tag" --verify-tag --draft --generate-notes --title "$release_tag" "${options[@]}"
+  # Changesetsが生成した今回の版の変更内容をReleaseにも掲載する。
+  notes=$(awk -v heading="## ${release_tag#v}" '
+    /^## / { if (found) exit; found = ($0 == heading); next }
+    found && (started || NF) { started = 1; print }
+  ' CHANGELOG.md)
+  if [[ -z "${notes//[[:space:]]/}" ]]; then
+    echo "Missing changelog entry for $release_tag" >&2
+    exit 1
+  fi
+  gh release create "$release_tag" --verify-tag --draft --notes "$notes" --title "$release_tag" "${options[@]}"
 fi
 
 gh release upload "$release_tag" "${assets[@]}" --clobber

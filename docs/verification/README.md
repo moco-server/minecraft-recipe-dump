@@ -24,9 +24,11 @@
 - 入力レシピ全件の解析成功。`loadDiagnostics=not-tracked` で、`complete` はsnapshotの書き出し成功を示す。
 - 表外のJSON形式、RecipeManager外の加工、完全な競合検出、全材料の充足やゲーム内での作成可否。
 
-ビルド、GameTest、通常配布JARの起動、配布CLIの実データ処理は別々の検証として扱う。JVM終了コード0だけでは保存成功と判定しない。公開配布先への公開は未実施。CLIガイドのZIP同梱とCDは実装済みで、実際のGitHub Release作成は初回タグpushで確認する。
+ビルド、GameTest、通常配布JARの起動、配布CLIの実データ処理は別々の検証として扱う。JVM終了コード0だけでは保存成功と判定しない。公開配布先への公開は未実施。CLIガイドのZIP同梱とCDは実装済みで、GitHub上でのRelease作成とMavenへの登録は初回のリリースPRマージ時に確認する。
 
 ## 実測記録
+
+- [2026-11-22 Changesetsによる公開](records/2026-11-22-changesets-release.md)
 
 - [2026-10-06 CLI利用者向けskill](records/2026-10-06-cli-consumer-skill.md): CLI ZIPへのskill同梱、配布CLIの16照合、LLMによる利用手順確認。ビルド成功、Node 50件成功。今回のGameTest再実行はfml_loaderモジュール重複で起動失敗し、成功件数未確認。
 
